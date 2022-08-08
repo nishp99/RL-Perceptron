@@ -119,7 +119,6 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
   os.makedirs(path)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
-  print('done')
 
   #save to path
 
