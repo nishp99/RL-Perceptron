@@ -6,7 +6,7 @@ import numpy.random as rnd
 import scipy
 import scipy.special
 import math
-import surface_functions
+from utils import surface_functions
 import os
 import submitit
 import datetime
