@@ -16,13 +16,12 @@ sys.path.append('utils')
 
 #start timestamp with unique identifier for name
 experiment = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
-
 #os.mkdir(with name of unique identifier)
 
 #os.path.join(results, unique identifier)
 
 path = os.path.join("utils/results/n or more", experiment)
-os.mkdirs(path)
+os.makedirs(path)
 
 
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
