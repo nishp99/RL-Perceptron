@@ -7,7 +7,7 @@ import scipy
 import scipy.special
 import math
 from utils import surface_functions
-from surface_functions import *
+from utils.surface_functions import *
 import os
 import submitit
 import datetime
