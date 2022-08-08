@@ -3,6 +3,7 @@ import numpy.random as rnd
 import scipy
 import scipy.special
 import math
+import os
 
 """
 Returns the test accuracy for a teacher-student pair with the given overlaps.
@@ -36,7 +37,7 @@ def generate_students(w_teacher, D):
     students.append(w_student.copy())
   
   overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
-  angles = [np.round(np.degrees(np.arccos(overlap)),1) for overlap in overlaps]
+  angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
   return result
@@ -45,15 +46,15 @@ def generate_students(w_teacher, D):
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
 output - dictionary of 
 """
-def n_or_more_neg(D, teacher, student, T, n, lr_1, lr_2, steps):
+def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_path):
   data = dict()
   
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = []
-  data['q'] = []
-  data['p'] = []
+  data['r'] = np.zeros(steps)
+  data['q'] = np.zeros(steps)
+  data['p'] = np.zeros(steps)
 
   step = 0
   num_steps = steps * D
@@ -102,33 +103,40 @@ def n_or_more_neg(D, teacher, student, T, n, lr_1, lr_2, steps):
     Q += dt * dQ
 
     if step % D == 0:
-      data['r'].append(R)
-      data['q'].append(Q)
+      data['r'][step/D -1] = R
+      data['q'][step/D-1] = Q
       
       p_correct = p_T_correct(Q,R,1)
       P = 0
       for i in range(n,T+1):
         P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
       
-      data['p'].append(P)
+      data['p'][step/D -1] = P
 
     step += 1
 
-  return data
+  path = os.path.join(experiment_path,f'{T}-{n}-{lr_1}-{lr_2}-{rad}')
+  os.mkdir(path)
+  file_path = os.path.join(path, 'dic.npy')
+  np.save(file_path, data)
+
+  #save to path
+
+  
 
 
 """
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
 output - dictionary of 
 """
-def all_neg(D, teacher, student, T, lr_1, lr_2, steps):
+def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
   data = dict()
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = []
-  data['q'] = []
-  data['p'] = []
+  data['r'] = np.zeros(steps)
+  data['q'] = np.zeros(steps)
+  data['p'] = np.zeros(steps)
 
   step = 0
   num_steps = steps * D
@@ -155,12 +163,16 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps):
     Q += dt * dQ
 
     if step % D == 0:
-      data['r'].append(R)
-      data['q'].append(Q)
+      data['r'][step/D -1] = R
+      data['q'][step/D -1] = Q
       
       P = p_T_correct(Q,R,T)
-      data['p'].append(P)
+      data['p'][step/D -1] = P
 
     step += 1
 
-  return data
+  path = os.path.join(experiment_path,f'{T}-{lr_1}-{lr_2}-{rad}', 'dic.npy')
+  file_path = os.path.join(path, 'dic.npy')
+  np.save(file_path, data)
+
+  #save to path
