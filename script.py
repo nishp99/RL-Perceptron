@@ -10,6 +10,9 @@ from utils import surface functions
 import os
 import submitit
 import datetime
+import sys
+
+sys.path.append('utils')
 
 #start timestamp with unique identifier for name
 experiment = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
