@@ -116,7 +116,7 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
     step += 1
 
   path = os.path.join(experiment_path,f'{T}-{n}-{lr_1}-{lr_2}-{rad}')
-  os.mkdirs(path)
+  os.makedirs(path)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
@@ -172,7 +172,7 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
     step += 1
 
   path = os.path.join(experiment_path,f'{T}-{lr_1}-{lr_2}-{rad}', 'dic.npy')
-  os.mkdirs(path)
+  os.makedirs(path)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
