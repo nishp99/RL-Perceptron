@@ -31,7 +31,7 @@ def generate_students(w_teacher, D):
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
     z /= np.linalg.norm(z)
-    w_student -= 0.3*z
+    w_student -= 0.7*z
     w_student /= np.linalg.norm(w_student)
     w_student *= np.sqrt(D)
     students.append(w_student.copy())
@@ -52,9 +52,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(steps-1)
-  data['q'] = np.zeros(steps-1)
-  data['p'] = np.zeros(steps-1)
+  #data['r'] = np.zeros(steps-1)
+  #data['q'] = np.zeros(steps-1)
+  #data['p'] = np.zeros(steps-1)
 
   step = 0
   num_steps = steps * D
@@ -102,23 +102,28 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
     R += dt * dR
     Q += dt * dQ
 
-    if step % D == 0:
-      data['r'][int(step/D) -1] = R
-      data['q'][int(step/D)-1] = Q
-      
-      p_correct = p_T_correct(Q,R,1)
-      P = 0
-      for i in range(n,T+1):
-        P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
-      
-      data['p'][int(step/D) -1] = P
+    """if step % D == 0:
+                  data['r'][int(step/D) -1] = R
+                  data['q'][int(step/D)-1] = Q
+                  
+                  p_correct = p_T_correct(Q,R,1)
+                  P = 0
+                  for i in range(n,T+1):
+                    P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
+                  
+                  data['p'][int(step/D) -1] = P"""
 
     step += 1
+
+  p_correct = p_T_correct(Q,R,1)
+  P = 0
+  for i in range(n,T+1):
+    P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
 
   path = os.path.join(experiment_path, f'{T}-{n}-{lr_1}-{lr_2}-{rad}')
   os.mkdir(path)
   file_path = os.path.join(path, 'dic.npy')
-  np.save(file_path, data)
+  np.save(file_path, np.array([P]))
 
   #save to path
 
@@ -134,9 +139,9 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(steps-1)
-  data['q'] = np.zeros(steps-1)
-  data['p'] = np.zeros(steps-1)
+  #data['r'] = np.zeros(steps-1)
+  #data['q'] = np.zeros(steps-1)
+  #data['p'] = np.zeros(steps-1)
 
   step = 0
   num_steps = steps * D
@@ -162,17 +167,19 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
     R += dt * dR
     Q += dt * dQ
 
-    if step % D == 0:
-      data['r'][int(step/D) -1] = R
-      data['q'][int(step/D) -1] = Q
-      
-      P = p_T_correct(Q,R,T)
-      data['p'][int(step/D) -1] = P
+    """if step % D == 0:
+                  data['r'][int(step/D) -1] = R
+                  data['q'][int(step/D) -1] = Q
+                  
+                  P = p_T_correct(Q,R,T)
+                  data['p'][int(step/D) -1] = P"""
 
     step += 1
 
+  P = p_T_correct(Q,R,T)
+
   path = os.path.join(experiment_path,f'{T}-{lr_1}-{lr_2}-{rad}', 'dic.npy')
   file_path = os.path.join(path, 'dic.npy')
-  np.save(file_path, data)
+  np.save(file_path, np.array([P]))
 
   #save to path
