@@ -104,8 +104,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
     Q += dt * dQ
 
     if step % D == 0:
-      data['r'][step/D -1] = R
-      data['q'][step/D-1] = Q
+      data['r'][int(step/D) -1] = R
+      data['q'][int(step/D)-1] = Q
       
       p_correct = p_T_correct(Q,R,1)
       P = 0
@@ -164,8 +164,8 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
     Q += dt * dQ
 
     if step % D == 0:
-      data['r'][step/D -1] = R
-      data['q'][step/D -1] = Q
+      data['r'][int(step/D) -1] = R
+      data['q'][int(step/D) -1] = Q
       
       P = p_T_correct(Q,R,T)
       data['p'][step/D -1] = P
