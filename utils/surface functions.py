@@ -39,7 +39,8 @@ def generate_students(w_teacher, D):
   overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
   angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
 
-  result = [i for i in zip(angles, students)]
+  #result = [i for i in zip(angles, students)]
+  result = list(zip(angles, students))
   return result
 
 """
