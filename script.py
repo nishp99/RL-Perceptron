@@ -35,7 +35,7 @@ students = generate_students(w_teacher, 400)
 lr_1_s = [i for i in range(1)]
 lr_2_s = [i/20 for i in range(1)]
 
-executor = submitit.AutoExecutor(folder="results")
+executor = submitit.AutoExecutor(folder="utils/results")
 
 executor.update_parameters(timeout_min = 20, mem_gb = 1, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
 
