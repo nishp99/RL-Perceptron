@@ -13,17 +13,21 @@ import submitit
 import datetime
 import sys
 
-sys.path.append('utils')
+# sys.path.append('utils')
 
 #start timestamp with unique identifier for name
-experiment = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
+run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 #os.mkdir(with name of unique identifier)
 
 #os.path.join(results, unique identifier)
+results_path = os.path.join("utils", "results")
+os.mkdir(results_path, exist_ok=True)
 
-path = os.path.join("utils/results/n or more", experiment)
-os.makedirs(path)
+experiment_path = os.path.join(results_path, "n_or_more")
+os.mkdir(experiment_path, exist_ok=True)
 
+run_path = os.path.join(experiment_path, run_timestamp)
+os.mkdir(run_path)
 
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
@@ -46,6 +50,6 @@ with executor.batch():
 		for j in lr_2_s:
 			for theta, w_student in students[100:101]:
 				print(i,j)
-				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 20, experiment_path = experiment)
+				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 20, experiment_path = run_timestamp)
 				jobs.append(job)
 
