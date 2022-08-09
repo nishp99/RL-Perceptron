@@ -44,12 +44,10 @@ executor = submitit.AutoExecutor(folder="utils/results")
 executor.update_parameters(timeout_min = 20, mem_gb = 1, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
 
 jobs = []
-print('x')
 with executor.batch():
 	for i in lr_1_s:
 		for j in lr_2_s:
 			for theta, w_student in students[:5]:
-				print(i,j)
 				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 1250, experiment_path = run_path)
 				jobs.append(job)
 
