@@ -52,9 +52,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(steps)
-  data['q'] = np.zeros(steps)
-  data['p'] = np.zeros(steps)
+  data['r'] = np.zeros(steps-1)
+  data['q'] = np.zeros(steps-1)
+  data['p'] = np.zeros(steps-1)
 
   step = 0
   num_steps = steps * D
@@ -134,9 +134,9 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(steps)
-  data['q'] = np.zeros(steps)
-  data['p'] = np.zeros(steps)
+  data['r'] = np.zeros(steps-1)
+  data['q'] = np.zeros(steps-1)
+  data['p'] = np.zeros(steps-1)
 
   step = 0
   num_steps = steps * D
