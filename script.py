@@ -36,8 +36,8 @@ students = generate_students(w_teacher, 400)
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
-lr_1_s = [i for i in range(1)]
-lr_2_s = [i/20 for i in range(1)]
+lr_1_s = [i/5 for i in range(1,10)]
+lr_2_s = [i/5 for i in range(1,5)]
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
@@ -48,8 +48,8 @@ print('x')
 with executor.batch():
 	for i in lr_1_s:
 		for j in lr_2_s:
-			for theta, w_student in students[100:101]:
+			for theta, w_student in students[:5]:
 				print(i,j)
-				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 20, experiment_path = run_path)
+				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 1250, experiment_path = run_path)
 				jobs.append(job)
 
