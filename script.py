@@ -21,10 +21,10 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 
 #os.path.join(results, unique identifier)
 results_path = os.path.join("utils", "results")
-os.mkdir(results_path)
+os.makedirs(results_path, exist_ok = True)
 
 experiment_path = os.path.join(results_path, "n_or_more")
-os.mkdir(experiment_path)
+os.makedirs(experiment_path, exist_ok = True)
 
 run_path = os.path.join(experiment_path, run_timestamp)
 os.mkdir(run_path)
