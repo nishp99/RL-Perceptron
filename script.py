@@ -29,7 +29,7 @@ os.makedirs(path)
 
 w_teacher = gen_teacher(400)
 students = generate_students(w_teacher, 400)
-
+#s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
 lr_1_s = [i for i in range(1)]
