@@ -47,7 +47,7 @@ jobs = []
 with executor.batch():
 	for i in lr_1_s:
 		for j in lr_2_s:
-			for theta, w_student in students:
+			for theta, w_student in students[100:101]:
 				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 5000, experiment_path = run_path)
 				jobs.append(job)
 
