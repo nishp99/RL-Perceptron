@@ -116,9 +116,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
     step += 1
 
   p_correct = p_T_correct(Q,R,1)
-    P = 0
-    for i in range(n,T+1):
-      P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
+  P = 0
+  for i in range(n,T+1):
+    P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
 
 
   data['p'] = P
