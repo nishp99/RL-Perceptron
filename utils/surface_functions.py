@@ -31,7 +31,7 @@ def generate_students(w_teacher, D):
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
     z /= np.linalg.norm(z)
-    w_student -= 0.7*z
+    w_student -= z
     w_student /= np.linalg.norm(w_student)
     w_student *= np.sqrt(D)
     students.append(w_student.copy())
@@ -52,8 +52,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(int(steps/2)-1)
-  data['q'] = np.zeros(int(steps/2)-1)
+  data['r'] = np.zeros(int(steps/4)-1)
+  data['q'] = np.zeros(int(steps/4)-1)
   #data['p'] = 0
 
   step = 0
@@ -102,9 +102,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
     R += dt * dR
     Q += dt * dQ
 
-    if step % 2*D == 0:
-      data['r'][int(step/(2*D)) -1] = np.around(R,2)
-      data['q'][int(step/(2*D))-1] = np.around(Q,2)
+    if step % 4*D == 0:
+      data['r'][int(step/(4*D)) -1] = np.around(R,2)
+      data['q'][int(step/(4*D))-1] = np.around(Q,2)
       
       """p_correct = p_T_correct(Q,R,1)
                         P = 0
@@ -141,8 +141,8 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
   R = teacher @ student / D
   Q = student @ student / D
   
-  data['r'] = np.zeros(steps/2-1)
-  data['q'] = np.zeros(steps/2-1)
+  data['r'] = np.zeros(steps/4-1)
+  data['q'] = np.zeros(steps/4-1)
   #data['p'] = 0
 
   step = 0
@@ -169,9 +169,9 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
     R += dt * dR
     Q += dt * dQ
 
-    if step % 2*D == 0:
-      data['r'][int(step/(2*D)) -1] = np.around(R,2)
-      data['q'][int(step/(2*D)) -1] = np.around(Q,2)
+    if step % 4*D == 0:
+      data['r'][int(step/(4*D)) -1] = np.around(R,2)
+      data['q'][int(step/(4*D)) -1] = np.around(Q,2)
       
       """P = p_T_correct(Q,R,T)
                         data['p'][int(step/D) -1] = P"""
