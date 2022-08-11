@@ -134,6 +134,10 @@ output - dictionary of
 
 
 def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
+
+  path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
+  os.mkdir(path)
+
   x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
   L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
 
@@ -201,8 +205,6 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
   data['lr'] = L_s
   data['ang'] = rad
 
-  path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
-  os.mkdir(path)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
@@ -214,6 +216,8 @@ input - dimension, teacher, student, episode length, threshold number for correc
 output - dictionary of 
 """
 def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
+  path = os.path.join(experiment_path,f'{T}-{rad}', 'dic.npy')
+  os.mkdir(path)
   x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
   L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
 
@@ -263,7 +267,6 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   data['lr'] = L_s
   data['ang'] = rad
 
-  path = os.path.join(experiment_path,f'{T}-{rad}', 'dic.npy')
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
