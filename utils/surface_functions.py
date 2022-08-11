@@ -133,78 +133,78 @@ output - dictionary of
   """
 
 
-  def n_or_more(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
-    x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
-    L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
+def n_or_more(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
+  x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
+  L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
 
-    R = teacher @ student * np.ones_like(L_s[:,:,0])/D
-    Q = student @ student * np.ones_like(L_s[:,:,0])/D
+  R = teacher @ student * np.ones_like(L_s[:,:,0])/D
+  Q = student @ student * np.ones_like(L_s[:,:,0])/D
 
-    data = dict()
-    data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
-    data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+  data = dict()
+  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
 
-    step = 0
-    num_steps = steps * D
-    dt = 1 / D
+  step = 0
+  num_steps = steps * D
+  dt = 1 / D
 
-    while step < num_steps:
-      normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
-      theta = np.arccos(normalised_overlap)
-      p_correct = (1- theta/np.pi)
-      phi = (np.pi - theta)/2
-
-      C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta),theta)
-      C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi),phi)
-
-      half_overlap = np.sqrt(1 + normalised_overlap)
-      half_incorrect = np.sqrt(1 - normalised_overlap)
-
-      a = np.zeros_like(R)
-      b = np.zeros_like(R)
-
-      c = np.zeros_like(R)
-      d = np.zeros_like(R)
-      e = np.zeros_like(R)
-
-      for i in range(n,T+1):
-        p_i = p_correct**i
-        q_i = (1-p_correct)**(T-i)
-        a += scipy.special.binom(T,i) * i * p_i * q_i
-        b += scipy.special.binom(T,i) *(T-i) * p_i * q_i
-
-        c += scipy.special.binom(T,i) * p_i * q_i
-        d += scipy.special.binom(T,i) * i* (i-1) * p_i * q_i
-        e += scipy.special.binom(T,i) * (T-i)* (T-i-1) * p_i * q_i
-      
-      #compute r,q updates
-      dR = (L_s[:,:,0] + L_s[:,:,1])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D/2) * half_overlap - b*C_2*np.sqrt(D/2)*half_incorrect) - L_s[:,:,1] *np.sqrt(2/np.pi)  * normalised_overlap
-      
-      dQ = (2 * (L_s[:,:,0] + L_s[:,:,0])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
-            (L_s[:,:,0]**2 - L_s[:,:,0]**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*L_s[:,:,1] * np.sqrt(2*Q/np.pi) + L_s[:,:,1]**2/(T*D)*(D + (T-1)*2/np.pi)
-
-      #update r, q
-      R += dt * dR
-      Q += dt * dQ
-
-      if step % 4*D == 0:
-        data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
-        data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
-        
-      step += 1
-
+  while step < num_steps:
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
-    P = (1- theta/np.pi)
+    p_correct = (1- theta/np.pi)
+    phi = (np.pi - theta)/2
 
-    data['p'] = P
-    data['lr'] = L_s
-    data['ang'] = rad
+    C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta),theta)
+    C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi),phi)
 
-    path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
-    os.mkdir(path)
-    file_path = os.path.join(path, 'dic.npy')
-    np.save(file_path, data)
+    half_overlap = np.sqrt(1 + normalised_overlap)
+    half_incorrect = np.sqrt(1 - normalised_overlap)
+
+    a = np.zeros_like(R)
+    b = np.zeros_like(R)
+
+    c = np.zeros_like(R)
+    d = np.zeros_like(R)
+    e = np.zeros_like(R)
+
+    for i in range(n,T+1):
+      p_i = p_correct**i
+      q_i = (1-p_correct)**(T-i)
+      a += scipy.special.binom(T,i) * i * p_i * q_i
+      b += scipy.special.binom(T,i) *(T-i) * p_i * q_i
+
+      c += scipy.special.binom(T,i) * p_i * q_i
+      d += scipy.special.binom(T,i) * i* (i-1) * p_i * q_i
+      e += scipy.special.binom(T,i) * (T-i)* (T-i-1) * p_i * q_i
+    
+    #compute r,q updates
+    dR = (L_s[:,:,0] + L_s[:,:,1])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D/2) * half_overlap - b*C_2*np.sqrt(D/2)*half_incorrect) - L_s[:,:,1] *np.sqrt(2/np.pi)  * normalised_overlap
+    
+    dQ = (2 * (L_s[:,:,0] + L_s[:,:,0])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
+          (L_s[:,:,0]**2 - L_s[:,:,0]**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*L_s[:,:,1] * np.sqrt(2*Q/np.pi) + L_s[:,:,1]**2/(T*D)*(D + (T-1)*2/np.pi)
+
+    #update r, q
+    R += dt * dR
+    Q += dt * dQ
+
+    if step % 4*D == 0:
+      data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
+      data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
+      
+    step += 1
+
+  normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+  theta = np.arccos(normalised_overlap)
+  P = (1- theta/np.pi)
+
+  data['p'] = P
+  data['lr'] = L_s
+  data['ang'] = rad
+
+  path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
+  os.mkdir(path)
+  file_path = os.path.join(path, 'dic.npy')
+  np.save(file_path, data)
 
   
 
