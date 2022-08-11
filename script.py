@@ -36,7 +36,7 @@ students = generate_students(w_teacher, 400)
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
-lr_1_s = np.arraY([i/20 for i in range(40)])
+lr_1_s = np.array([i/20 for i in range(40)])
 lr_2_s = np.array([i/20 for i in range(40)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
