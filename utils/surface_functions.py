@@ -46,7 +46,7 @@ def generate_students(w_teacher, D):
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
 output - dictionary of 
 """
-def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_path):
+"""def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_path):
   data = dict()
   
   R = teacher @ student / D
@@ -108,12 +108,12 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
       data['r'][int(step/(4*D))] = np.around(R,2)
       data['q'][int(step/(4*D))] = np.around(Q,2)
       
-      """p_correct = p_T_correct(Q,R,1)
+      p_correct = p_T_correct(Q,R,1)
                         P = 0
                         for i in range(n,T+1):
                           P += scipy.special.binom(T,i) * p_correct**i * (1-p_correct)**(T-i)
                         
-                        data['p'][int(step/D) -1] = P"""
+                        data['p'][int(step/D) -1] = P
 
     step += 1
 
@@ -130,6 +130,81 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
   np.save(file_path, data)
 
   #save to path
+  """
+
+
+  def n_or_more(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
+    x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
+    L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
+
+    R = teacher @ student * np.ones_like(L_s[:,:,0])/D
+    Q = student @ student * np.ones_like(L_s[:,:,0])/D
+
+    data = dict()
+    data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+    data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+
+    step = 0
+    num_steps = steps * D
+    dt = 1 / D
+
+    while step < num_steps:
+      normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+      theta = np.arccos(normalised_overlap)
+      p_correct = (1- theta/np.pi)
+      phi = (np.pi - theta)/2
+
+      C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta),theta)
+      C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi),phi)
+
+      half_overlap = np.sqrt(1 + normalised_overlap)
+      half_incorrect = np.sqrt(1 - normalised_overlap)
+
+      a = np.zeros_like(R)
+      b = np.zeros_like(R)
+
+      c = np.zeros_like(R)
+      d = np.zeros_like(R)
+      e = np.zeros_like(R)
+
+      for i in range(n,T+1):
+        p_i = p_correct**i
+        q_i = (1-p_correct)**(T-i)
+        a += scipy.special.binom(T,i) * i * p_i * q_i
+        b += scipy.special.binom(T,i) *(T-i) * p_i * q_i
+
+        c += scipy.special.binom(T,i) * p_i * q_i
+        d += scipy.special.binom(T,i) * i* (i-1) * p_i * q_i
+        e += scipy.special.binom(T,i) * (T-i)* (T-i-1) * p_i * q_i
+      
+      #compute r,q updates
+      dR = (L_s[:,:,0] + L_s[:,:,1])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D/2) * half_overlap - b*C_2*np.sqrt(D/2)*half_incorrect) - L_s[:,:,1] *np.sqrt(2/np.pi)  * normalised_overlap
+      
+      dQ = (2 * (L_s[:,:,0] + L_s[:,:,0])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
+            (L_s[:,:,0]**2 - L_s[:,:,0]**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*L_s[:,:,1] * np.sqrt(2*Q/np.pi) + L_s[:,:,1]**2/(T*D)*(D + (T-1)*2/np.pi)
+
+      #update r, q
+      R += dt * dR
+      Q += dt * dQ
+
+      if step % 4*D == 0:
+        data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
+        data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
+        
+      step += 1
+
+    normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+    theta = np.arccos(normalised_overlap)
+    P = (1- theta/np.pi)
+
+    data['p'] = P
+    data['lr'] = L_s
+    data['ang'] = rad
+
+    path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
+    os.mkdir(path)
+    file_path = os.path.join(path, 'dic.npy')
+    np.save(file_path, data)
 
   
 
@@ -138,16 +213,16 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps,experiment_p
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
 output - dictionary of 
 """
-def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
+def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
+  x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
+  L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
+
+  R = teacher @ student * np.ones_like(L_s[:,:,0])/D
+  Q = student @ student * np.ones_like(L_s[:,:,0])/D
+
   data = dict()
-  R = teacher @ student / D
-  Q = student @ student / D
-  
-  data['r'] = np.zeros(steps/4)
-  data['q'] = np.zeros(steps/4)
-  data['r'][0] = R
-  data['q'][0] = Q
-  #data['p'] = 0
+  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
 
   step = 0
   num_steps = steps * D
@@ -155,39 +230,40 @@ def all_neg(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
 
   while step < num_steps:
     #compute quantities needed for updates
-    normalised_overlap = R/ np.sqrt(Q)
-    p_correct = (1 - 1 / np.pi * np.arccos(normalised_overlap))
-    p_correct_all = p_correct**T
+    normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+    theta = np.arccos(normalised_overlap)
+    p_correct_all = (1 - 1 / np.pi * np.arccos(normalised_overlap))**T
   
-    phi = (np.pi - np.arccos(normalised_overlap))/2
+    phi = (np.pi - theta)/2
     C_1 = np.sqrt(np.pi/2)*np.sin(phi)/phi
     
     half_overlap = np.sqrt(1 + normalised_overlap)
 
     #compute r,q updates
-    dR = (lr_1 + lr_2) * C_1/np.sqrt(2) * p_correct_all * half_overlap - lr_2 * R * np.sqrt(2/(Q*np.pi))
+    dR = (L_s[:,:,0] + L_s[:,:,1]) * C_1/np.sqrt(2) * p_correct_all * half_overlap - L_s[:,:,1] * R * np.sqrt(2/(Q*np.pi))
         
-    dQ = lr_2**2/(T*D) *(D + (T-1)*2/np.pi) - 2*lr_2*np.sqrt(2*Q/np.pi) + ((lr_1**2 - lr_2**2)*(D+ (T-1)*C_1**2)/(T*D) + (lr_1 + lr_2)*np.sqrt(2*Q)*half_overlap*C_1)*p_correct_all
+    dQ = L_s[:,:,1]**2/(T*D) *(D + (T-1)*2/np.pi) - 2*L_s[:,:,1]*np.sqrt(2*Q/np.pi) + ((L_s[:,:,0]**2 - L_s[:,:,1]**2)*(D+ (T-1)*C_1**2)/(T*D) + (L_s[:,:,0] + L_s[:,:,1])*np.sqrt(2*Q)*half_overlap*C_1)*p_correct_all
 
     #update r, q
     R += dt * dR
     Q += dt * dQ
 
     if step % 4*D == 0:
-      data['r'][int(step/(4*D))] = np.around(R,2)
-      data['q'][int(step/(4*D))] = np.around(Q,2)
-      
-      """P = p_T_correct(Q,R,T)
-                        data['p'][int(step/D) -1] = P"""
+      data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
+      data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
 
     step += 1
 
-  #P = p_T_correct(Q,R,T)
 
-
-  P = p_T_correct(Q,R,T)
+  normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+  theta = np.arccos(normalised_overlap)
+  P = (1- theta/np.pi)
+  
   data['p'] = P
-  path = os.path.join(experiment_path,f'{T}-{lr_1}-{lr_2}-{rad}', 'dic.npy')
+  data['lr'] = L_s
+  data['ang'] = rad
+
+  path = os.path.join(experiment_path,f'{T}-{rad}', 'dic.npy')
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 

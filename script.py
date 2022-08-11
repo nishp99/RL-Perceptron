@@ -36,18 +36,16 @@ students = generate_students(w_teacher, 400)
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
-lr_1_s = [i/20 for i in range(40)]
-lr_2_s = [i/20 for i in range(40)]
+lr_1_s = np.arraY([i/20 for i in range(40)])
+lr_2_s = np.array([i/20 for i in range(40)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 20, mem_gb = 3, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
+executor.update_parameters(timeout_min = 60, mem_gb = 3, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
 
 jobs = []
 with executor.batch():
-	for i in lr_1_s:
-		for j in lr_2_s:
-			for theta, w_student in students[:3]:
-				job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1 = i, lr_2 = j, steps = 5000, experiment_path = run_path)
-				jobs.append(job)
+	for theta, w_student in students:
+		job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 5000, experiment_path = run_path)
+		jobs.append(job)
 
