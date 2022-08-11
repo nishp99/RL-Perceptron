@@ -133,7 +133,7 @@ output - dictionary of
   """
 
 
-def n_or_more(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
+def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
   x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
   L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
 
