@@ -158,7 +158,7 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
     p_correct = (1- theta/np.pi)
     phi = (np.pi - theta)/2
 
-    C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta/2),theta/2)
+    C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta/2),(theta/2))
     C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi),phi)
 
     half_overlap = np.sqrt(1 + normalised_overlap)
@@ -184,8 +184,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
     #compute r,q updates
     dR = (L_s[:,:,0] + L_s[:,:,1])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D/2) * half_overlap - b*C_2*np.sqrt(D/2)*half_incorrect) - L_s[:,:,1] *np.sqrt(2/np.pi)  * normalised_overlap
     
-    dQ = (2 * (L_s[:,:,0] + L_s[:,:,0])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
-          (L_s[:,:,0]**2 - L_s[:,:,0]**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*L_s[:,:,1] * np.sqrt(2*Q/np.pi) + L_s[:,:,1]**2/(T*D)*(D + (T-1)*2/np.pi)
+    dQ = (2 * (L_s[:,:,0] + L_s[:,:,1])/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
+          (L_s[:,:,0]**2 - L_s[:,:,1]**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*L_s[:,:,1] * np.sqrt(2*Q/np.pi) + L_s[:,:,1]**2/(T*D)*(D + (T-1)*2/np.pi)
 
     #update r, q
     R += dt * dR
