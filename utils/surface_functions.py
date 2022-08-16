@@ -145,8 +145,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
   Q = student @ student * np.ones_like(L_s[:,:,0])/D
 
   data = dict()
-  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
-  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/8)))
+  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/8)))
 
   step = 0
   num_steps = steps * D
@@ -191,7 +191,7 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
     R += dt * dR
     Q += dt * dQ
 
-    if step % 4*D == 0:
+    if step % 8*D == 0:
       data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
       data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
       
@@ -227,8 +227,8 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   Q = student @ student * np.ones_like(L_s[:,:,0])/D
 
   data = dict()
-  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
-  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/4)))
+  data['r'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/8)))
+  data['q'] = np.tile(np.expand_dims(np.zeros_like(R), axis =2), (1,1,int(steps/8)))
 
   step = 0
   num_steps = steps * D
@@ -254,7 +254,7 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
     R += dt * dR
     Q += dt * dQ
 
-    if step % 4*D == 0:
+    if step % 8*D == 0:
       data['r'][:,:,int(step/(4*D))] = np.around(np.copy(R),4)
       data['q'][:,:,int(step/(4*D))] = np.around(np.copy(Q),4)
 
