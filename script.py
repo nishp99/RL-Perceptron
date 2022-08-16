@@ -41,11 +41,11 @@ lr_2_s = np.array([i/20 for i in range(40)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 180, mem_gb = 3, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
+executor.update_parameters(timeout_min = 360, mem_gb = 3, gpus_per_node =0, cpus_per_task = 1, slurm_array_parallelism = 256 )
 
 jobs = []
 with executor.batch():
 	for theta, w_student in students:
-		job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 10, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 5000, experiment_path = run_path)
+		job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 10, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 10000, experiment_path = run_path)
 		jobs.append(job)
 
