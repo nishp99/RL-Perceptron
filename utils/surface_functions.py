@@ -215,7 +215,7 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
 output - dictionary of 
 """
-def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
+def all_neg(D, teacher, rad, student, T, lr_1_s, lr_2_s, steps, experiment_path):
 
   path = os.path.join(experiment_path,f'{T}-{rad}', 'dic.npy')
   os.mkdir(path)
