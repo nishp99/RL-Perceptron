@@ -217,7 +217,7 @@ output - dictionary of
 """
 def all_neg(D, teacher, rad, student, T, lr_1_s, lr_2_s, steps, experiment_path):
 
-  path = os.path.join(experiment_path,f'{T}-{rad}', 'dic.npy')
+  path = os.path.join(experiment_path, f'{T}-{rad}')
   os.mkdir(path)
 
   x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
