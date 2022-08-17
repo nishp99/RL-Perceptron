@@ -29,7 +29,7 @@ os.mkdir(run_path)
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
 w_teacher = gen_teacher(400)
-vectors = generate_students(w_teacher, 400)
+vectors = generate_students(w_teacher, 400, 20)
 students = vectors[2:3]+vectors[16:17]+vectors[31:32]+vectors[40:41]
 
 #s

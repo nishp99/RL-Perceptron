@@ -32,7 +32,7 @@ os.mkdir(run_path)
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
 w_teacher = gen_teacher(400)
-students = generate_students(w_teacher, 400)
+students = generate_students(w_teacher, 400, 20)
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 

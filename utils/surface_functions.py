@@ -22,7 +22,7 @@ def gen_teacher(D):
 """
 generate series of students from 0 to 180 degrees from teacher
 """
-def generate_students(w_teacher, D):
+def generate_students(w_teacher, D, norm):
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
@@ -33,7 +33,7 @@ def generate_students(w_teacher, D):
     z /= np.linalg.norm(z)
     w_student -= z
     w_student /= np.linalg.norm(w_student)
-    w_student *= np.sqrt(D)
+    w_student *= norm
     students.append(w_student.copy())
   
   overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
