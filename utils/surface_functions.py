@@ -192,6 +192,7 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experim
     Q += dt * dQ
 
     if step % 8*D == 0:
+      print(step)
       data['r'][:,:,int(step/(8*D))] = np.around(np.copy(R),5)
       data['q'][:,:,int(step/(8*D))] = np.around(np.copy(Q),5)
       
