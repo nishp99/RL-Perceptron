@@ -40,7 +40,7 @@ lr_2_s = np.array([i/80 for i in range(160)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 600, mem_gb = 4, gpus_per_node =0, cpus_per_task = 4, slurm_array_parallelism = 256)
+executor.update_parameters(timeout_min = 1000, mem_gb = 4, gpus_per_node =0, cpus_per_task = 4, slurm_array_parallelism = 256)
 
 jobs = []
 with executor.batch():
