@@ -45,5 +45,5 @@ executor.update_parameters(timeout_min = 1000, mem_gb = 4, gpus_per_node =0, cpu
 jobs = []
 with executor.batch():
 	for theta, w_student in students:
-		job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 7, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 10000, experiment_path = run_path)
+		job = executor.submit(n_or_more_neg, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 10000, experiment_path = run_path)
 		jobs.append(job)
