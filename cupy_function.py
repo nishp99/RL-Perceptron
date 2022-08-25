@@ -4,16 +4,16 @@ import numpy as np
 def tester():
 	cp.cuda.Device(0).use()
 	x_cpu = np.array([1,2,3])
-	cp.cuda.Stream.null.synchronize()
 	y_cpu = np.array([4,5,6])
-	cp.cuda.Stream.null.synchronize()
 	z_cpu = x_cpu + y_cpu
-	cp.cuda.Stream.null.synchronize()
 	z_c = cp.get_array_module(z_cpu)
 
 	x_gpu = cp.asarray(x_cpu)
+	cp.cuda.Stream.null.synchronize()
 	y_gpu = cp.asarray(y_cpu)
+	cp.cuda.Stream.null.synchronize()
 	z_gpu = x_gpu + y_gpu
+	cp.cuda.Stream.null.synchronize()
 	z_g = cp.get_array_module(z_gpu)
 
 	print('type z_cpu')
