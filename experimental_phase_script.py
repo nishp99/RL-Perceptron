@@ -32,7 +32,7 @@ os.mkdir(run_path)
 
 w_teacher = gen_teacher(400)
 vectors = generate_students(w_teacher, 400, 20)
-students = vectors[2:3]+vectors[16:17]+vectors[31:32]+vectors[40:41]
+students = vectors[31:32]
 
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
