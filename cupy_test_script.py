@@ -1,6 +1,6 @@
 import numpy as np
 import cupy as cp
-import cupy_function
+import cupy_functions
 from cupy_functions import *
 import os
 import submitit
