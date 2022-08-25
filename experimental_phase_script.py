@@ -4,8 +4,10 @@ import cupy.random as rnd
 import scipy
 import scipy.special
 import math
-from utils import experimental_functions
-from utils.experimental_functions import *
+#from utils import experimental_functions
+import experimental_functions
+from experimental_functions import *
+#from utils.experimental_functions import *
 import os
 import submitit
 import datetime
