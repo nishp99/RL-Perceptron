@@ -13,6 +13,10 @@ def tester():
 	z_gpu = x_gpu + y_gpu
 	z_g = cp.get_array_module(z_gpu)
 
+	print('type z_cpu')
+	print(type(z_cpu))
+	print('type z_gpu')
+	print(type(z_gpu))
 	print('number of recognised devices:')
 	print(cp.cuda.runtime.getDeviceCount())
 	print('CPU name:')
