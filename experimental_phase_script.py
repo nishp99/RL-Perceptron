@@ -1,5 +1,6 @@
 import numpy as np
-import numpy.random as rnd
+import cupy as cp
+import cupy.random as rnd
 import scipy
 import scipy.special
 import math
@@ -8,7 +9,8 @@ from utils.experimental_functions import *
 import os
 import submitit
 import datetime
-import sys
+
+cp.cuda.Device(0).use()
 
 # sys.path.append('utils')
 
@@ -35,15 +37,15 @@ students = vectors[2:3]+vectors[16:17]+vectors[31:32]+vectors[40:41]
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
-lr_1_s = np.array([i/80 for i in range(160)])
-lr_2_s = np.array([i/80 for i in range(160)])
+lr_1_s = cp.array([i/40 for i in range(80)])
+lr_2_s = cp.array([i/40 for i in range(80)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 1500, mem_gb = 4, gpus_per_node =0, cpus_per_task = 4, slurm_array_parallelism = 256)
+executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 256, slurm_partition = "gpu")
 
 jobs = []
 with executor.batch():
 	for theta, w_student in students:
-		job = executor.submit(n_or_more_neg_exp, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 10000, experiment_path = run_path)
+		job = executor.submit(n_or_more_neg_exp, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 1600, experiment_path = run_path)
 		jobs.append(job)

@@ -1,5 +1,6 @@
 import numpy as np
-import numpy.random as rnd
+import cupy as cp
+import cupy.random as rnd
 import scipy
 import scipy.special
 import math
@@ -9,14 +10,14 @@ import os
 Returns the test accuracy for a teacher-student pair with the given overlaps.
 """
 def p_T_correct(Q, R, T):
-    return (1 - 1 / np.pi * np.arccos(R / np.sqrt(Q)))**T
+    return (1 - 1 / np.pi * cp.arccos(R / cp.sqrt(Q)))**T
 
 """
 generates teacher
 """
 def gen_teacher(D):
   teacher = rnd.randn(D)
-  teacher /= np.sqrt(teacher @ teacher/D)
+  teacher /= cp.sqrt(teacher @ teacher/D)
   return teacher
 
 """
@@ -26,18 +27,18 @@ def generate_students(w_teacher, D, norm):
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
-  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
-    mag = np.linalg.norm(w_student)
+  while w_student @ w_teacher/(20*cp.linalg.norm(w_student)) < 0.9995:
+    mag = cp.linalg.norm(w_student)
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
-    z /= np.linalg.norm(z)
+    z /= cp.linalg.norm(z)
     w_student -= z
-    w_student /= np.linalg.norm(w_student)
+    w_student /= cp.linalg.norm(w_student)
     w_student *= norm
     students.append(w_student.copy())
   
-  overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
-  angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
+  overlaps = [w_teacher @ student/cp.linalg.norm(student)/cp.sqrt(D) for student in students]
+  angles = [cp.round(cp.arccos(overlap),2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
   return result
@@ -139,19 +140,24 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   os.mkdir(path)
 
   #create grid of learning_rates
-  x_1, y_1 = np.meshgrid(lr_2_s, lr_1_s)
-  L_s = np.concatenate((np.expand_dims(y_1,axis = 2), np.expand_dims(x_1,axis = 2)), axis = 2)
+  x_1, y_1 = cp.meshgrid(lr_2_s, lr_1_s)
+  cp.cuda.Stream.null.synchronize()
+  L_s = cp.concatenate((cp.expand_dims(y_1,axis = 2), cp.expand_dims(x_1,axis = 2)), axis = 2)
+  cp.cuda.Stream.null.synchronize()
 
   size_1 = lr_1_s.size
   size_2 = lr_2_s.size
 
   #initialize all students
-  W = np.tile(np.expand_dims(np.expand_dims(student, axis = 0), axis = 0), (lr_1_s.size, lr_2_s.size, 1))
+  W = cp.tile(cp.expand_dims(cp.expand_dims(student, axis = 0), axis = 0), (size_1, size_2, 1))
+  cp.cuda.Stream.null.synchronize()
 
   #create dictionary of order parameters
   data = dict()
-  data['r'] = np.tile(np.expand_dims(np.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,int(steps/8)))
-  data['q'] = np.tile(np.expand_dims(np.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,int(steps/8)))
+  data['r'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,int(steps/8)))
+  cp.cuda.Stream.null.synchronize()
+  data['q'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,int(steps/8)))
+  cp.cuda.Stream.null.synchronize()
 
 
   step = 0
@@ -161,44 +167,57 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   while step < num_steps:
     #sample T examples
     xs = rnd.randn(T, D)
-    X = np.tile(np.expand_dims(np.expand_dims(xs, axis = 1), axis = 1), (1,size_1, size_2, 1))
+    cp.cuda.Stream.null.synchronize()
+    X = cp.tile(cp.expand_dims(cp.expand_dims(xs, axis = 1), axis = 1), (1,size_1, size_2, 1))
+    cp.cuda.Stream.null.synchronize()
 
     #predicted classification
-    Y_pred = np.sign(np.sum(np.expand_dims(np.copy(W), axis = 0) * X, axis = 3))
+    Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis = 0) * X, axis = 3))
+    cp.cuda.Stream.null.synchronize()
 
     #actual classification
-    Y = np.expand_dims(np.expand_dims(np.sign(np.copy(teacher) @ xs.T), axis = 1), axis = 2)
+    Y = cp.expand_dims(cp.expand_dims(cp.sign(cp.copy(teacher) @ xs.T), axis = 1), axis = 2)
+    cp.cuda.Stream.null.synchronize()
 
     #create filter for rewards (1/0)
     reward = Y*Y_pred + 1
-    reward = np.sum(reward, axis = 0)
+    cp.cuda.Stream.null.synchronize()
+    reward = cp.sum(reward, axis = 0)
+    cp.cuda.Stream.null.synchronize()
     reward = reward >= 2*n
+    cp.cuda.Stream.null.synchronize()
     reward = reward.astype(int)
-    reward = np.expand_dims(reward, axis = 2)
+    cp.cuda.Stream.null.synchronize()
+    reward = cp.expand_dims(reward, axis = 2)
+    cp.cuda.Stream.null.synchronize()
 
     #update from mean of examples over episode
-    hebbian_update = np.mean(np.expand_dims(Y_pred, axis = 3) * X, axis = 0)
+    hebbian_update = cp.mean(cp.expand_dims(Y_pred, axis = 3) * X, axis = 0)
+    cp.cuda.Stream.null.synchronize()
 
     #update students
-    W += (np.expand_dims(L_s[:,:,0] + L_s[:,:,1], axis = 2) * reward - np.expand_dims(L_s[:,:,1], axis = 2)) * hebbian_update / np.sqrt(D)
+    W += (cp.expand_dims(L_s[:,:,0] + L_s[:,:,1], axis = 2) * reward - cp.expand_dims(L_s[:,:,1], axis = 2)) * hebbian_update / cp.sqrt(D)
     
     #log order parameters      
     if step % 8*D == 0:
       print(step)
-      data['r'][:,:,int(step/(8*D))] = np.around(np.sum(np.expand_dims(np.expand_dims(np.copy(teacher), axis = 0), axis = 0) * np.copy(W), axis = 2)/D, 5)
-      data['q'][:,:,int(step/(8*D))] = np.around(np.sum(np.copy(W)**2, axis = 2)/D, 5)
+      data['r'][:,:,int(step/(8*D))] = cp.aroundc(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
+      data['q'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)
       
     step += 1
 
   #log final accuracy
-  R = np.sum(np.expand_dims(np.expand_dims(np.copy(teacher), axis = 0), axis = 0) * np.copy(W), axis = 2)/D
-  Q = np.sum(np.copy(W)**2, axis = 2)/D
-  normalised_overlap = np.divide(R,np.sqrt(Q))
-  theta = np.arccos(normalised_overlap)
+  R = cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D
+  Q = cp.sum(cp.copy(W)**2, axis = 2)/D
+  normalised_overlap = cp.divide(R,cp.sqrt(Q))
+  theta = cp.arccos(normalised_overlap)
   P = (1- theta/np.pi)
 
-  data['p'] = P
-  data['lr'] = L_s
+  data[R] = cp.asnumpy(data[R])
+  data[Q] = cp.asnumpy(data[Q])
+  
+  data['p'] = cp.asnumpy(P)
+  data['lr'] = cp.asnumpy(L_s)
   data['ang'] = rad
 
   file_path = os.path.join(path, 'dic.npy')
