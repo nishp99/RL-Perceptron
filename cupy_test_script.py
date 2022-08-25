@@ -1,7 +1,7 @@
 import numpy as np
 import cupy as cp
-import cupy_functions
-from cupy_functions import *
+import cupy_function
+from cupy_function import *
 import os
 import submitit
 import datetime
