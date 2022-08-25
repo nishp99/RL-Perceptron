@@ -6,7 +6,7 @@ import os
 import submitit
 import datetime
 
-cp.cuda.Device(0).use()
+#cp.cuda.Device(0).use()
 # sys.path.append('utils')
 
 #start timestamp with unique identifier for name

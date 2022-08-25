@@ -2,7 +2,7 @@ import cupy as cp
 import numpy as np
 
 def tester():
-	#cp.cuda.Device(0).use()
+	cp.cuda.Device(0).use()
 	x_cpu = np.array([1,2,3])
 	y_cpu = np.array([4,5,6])
 	z_cpu = x_cpu + y_cpu
