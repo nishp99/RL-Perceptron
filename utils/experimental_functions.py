@@ -16,6 +16,7 @@ def p_T_correct(Q, R, T):
 generates teacher
 """
 def gen_teacher(D):
+  cp.cuda.Device(0).use()
   teacher = rnd.randn(D)
   teacher /= cp.sqrt(teacher @ teacher/D)
   return teacher
@@ -24,6 +25,7 @@ def gen_teacher(D):
 generate series of students from 0 to 180 degrees from teacher
 """
 def generate_students(w_teacher, D, norm):
+  cp.cuda.Device(0).use()
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
@@ -135,7 +137,7 @@ output - dictionary of
 
 
 def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
-
+  cp.cuda.Device(0).use()
   path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
   os.mkdir(path)
 
@@ -215,7 +217,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
 
   data[R] = cp.asnumpy(data[R])
   data[Q] = cp.asnumpy(data[Q])
-  
+
   data['p'] = cp.asnumpy(P)
   data['lr'] = cp.asnumpy(L_s)
   data['ang'] = rad
