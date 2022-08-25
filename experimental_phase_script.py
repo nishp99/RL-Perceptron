@@ -40,6 +40,30 @@ students = vectors[31:32]
 lr_1_s = cp.array([i/40 for i in range(80)])
 lr_2_s = cp.array([i/40 for i in range(80)])
 
+x_cpu = np.array([1,2,3])
+y_cpu = np.array([4,5,6])
+z_cpu = x_cpu + y_cpu
+z_c = cp.get_array_module(z_cpu)
+
+x_gpu = cp.asarray(x_cpu)
+cp.cuda.Stream.null.synchronize()
+y_gpu = cp.asarray(y_cpu)
+cp.cuda.Stream.null.synchronize()
+z_gpu = x_gpu + y_gpu
+cp.cuda.Stream.null.synchronize()
+z_g = cp.get_array_module(z_gpu)
+
+print('type z_cpu')
+print(type(z_cpu))
+print('type z_gpu')
+print(type(z_gpu))
+print('number of recognised devices:')
+print(cp.cuda.runtime.getDeviceCount())
+print('CPU name:')
+print(z_c.__name__)
+print('GPU name:')
+print(z_g.__name__)
+
 executor = submitit.AutoExecutor(folder="utils/results")
 
 executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 0, slurm_array_parallelism = 256, slurm_partition = "gpu")
