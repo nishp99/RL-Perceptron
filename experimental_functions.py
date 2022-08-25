@@ -1,8 +1,8 @@
 import numpy as np
 import cupy as cp
 import cupy.random as rnd
-import scipy
-import scipy.special
+#import scipy
+#import scipy.special
 import math
 import os
 

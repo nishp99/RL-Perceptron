@@ -44,7 +44,7 @@ lr_2_s = cp.array([i/40 for i in range(80)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 0, slurm_array_parallelism = 256, slurm_partition = "gpu")
+executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 0, slurm_array_parallelism = 1, slurm_partition = "gpu")
 
 jobs = []
 with executor.batch():
