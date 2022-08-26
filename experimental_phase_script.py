@@ -33,8 +33,8 @@ students = vectors[31:32]
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
 
-lr_1_s = cp.array([i/40 for i in range(80)])
-lr_2_s = cp.array([i/40 for i in range(80)])
+lr_1_s = np.array([i/40 for i in range(80)])
+lr_2_s = np.array([i/40 for i in range(80)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
