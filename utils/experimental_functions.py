@@ -218,8 +218,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   theta = cp.arccos(normalised_overlap)
   P = (1- theta/np.pi)
 
-  data[R] = cp.asnumpy(data[R])
-  data[Q] = cp.asnumpy(data[Q])
+  data['r'] = cp.asnumpy(data['r'])
+  data['q'] = cp.asnumpy(data['q'])
 
   data['p'] = cp.asnumpy(P)
   data['lr'] = cp.asnumpy(L_s)
