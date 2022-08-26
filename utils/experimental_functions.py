@@ -135,6 +135,8 @@ output - dictionary of
 
 def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
   cp.cuda.Device(0).use()
+  lr_1_s = cp.asarray(lr_1_s)
+  lr_2_s = cp.asarray(l2_2_s)
   teacher = cp.asarray(teacher)
   student = cp.asarray(student)
 
