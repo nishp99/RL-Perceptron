@@ -1,5 +1,6 @@
-import numpy as np
 import cupy as cp
+cp.cuda.Device(0).use()
+import numpy as np
 import cupy.random as rnd
 import scipy
 import scipy.special

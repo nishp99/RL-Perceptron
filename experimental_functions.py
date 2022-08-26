@@ -16,30 +16,30 @@ def p_T_correct(Q, R, T):
 generates teacher
 """
 def gen_teacher(D):
-  x_cpu = np.array([1,2,3])
-  y_cpu = np.array([4,5,6])
-  z_cpu = x_cpu + y_cpu
-  z_c = cp.get_array_module(z_cpu)
-
-  x_gpu = cp.asarray(x_cpu)
-  cp.cuda.Stream.null.synchronize()
-  y_gpu = cp.asarray(y_cpu)
-  cp.cuda.Stream.null.synchronize()
-  z_gpu = x_gpu + y_gpu
-  cp.cuda.Stream.null.synchronize()
-  z_g = cp.get_array_module(z_gpu)
-
-  print('type z_cpu')
-  print(type(z_cpu))
-  print('type z_gpu')
-  print(type(z_gpu))
-  print('number of recognised devices:')
-  print(cp.cuda.runtime.getDeviceCount())
-  print('CPU name:')
-  print(z_c.__name__)
-  print('GPU name:')
-  print(z_g.__name__)
-  cp.cuda.Device(0).use()
+  """x_cpu = np.array([1,2,3])
+        y_cpu = np.array([4,5,6])
+        z_cpu = x_cpu + y_cpu
+        z_c = cp.get_array_module(z_cpu)
+      
+        x_gpu = cp.asarray(x_cpu)
+        cp.cuda.Stream.null.synchronize()
+        y_gpu = cp.asarray(y_cpu)
+        cp.cuda.Stream.null.synchronize()
+        z_gpu = x_gpu + y_gpu
+        cp.cuda.Stream.null.synchronize()
+        z_g = cp.get_array_module(z_gpu)
+      
+        print('type z_cpu')
+        print(type(z_cpu))
+        print('type z_gpu')
+        print(type(z_gpu))
+        print('number of recognised devices:')
+        print(cp.cuda.runtime.getDeviceCount())
+        print('CPU name:')
+        print(z_c.__name__)
+        print('GPU name:')
+        print(z_g.__name__)
+        cp.cuda.Device(0).use()"""
   teacher = rnd.randn(D)
   teacher /= cp.sqrt(teacher @ teacher/D)
   return teacher
@@ -48,7 +48,7 @@ def gen_teacher(D):
 generate series of students from 0 to 180 degrees from teacher
 """
 def generate_students(w_teacher, D, norm):
-  cp.cuda.Device(0).use()
+  #cp.cuda.Device(0).use()
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
@@ -160,7 +160,7 @@ output - dictionary of
 
 
 def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
-  cp.cuda.Device(0).use()
+  #cp.cuda.Device(0).use()
   path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
   os.mkdir(path)
 
