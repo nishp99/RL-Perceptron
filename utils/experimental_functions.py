@@ -206,7 +206,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
     #log order parameters      
     if step % 8*D == 0:
       print(step)
-      data['r'][:,:,int(step/(8*D))] = cp.aroundc(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
+      data['r'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
       data['q'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)
       
     step += 1
