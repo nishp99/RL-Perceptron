@@ -1,21 +1,14 @@
 import cupy as cp
-cp.cuda.Device(0).use()
 import numpy as np
 import cupy.random as rnd
 import scipy
 import scipy.special
 import math
-#from utils import experimental_functions
-import experimental_functions
-from experimental_functions import *
-#from utils.experimental_functions import *
+from utils import experimental_functions
+from utils.experimental_functions import *
 import os
 import submitit
 import datetime
-
-#cp.cuda.Device(0).use()
-
-# sys.path.append('utils')
 
 #start timestamp with unique identifier for name
 run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
@@ -45,10 +38,10 @@ lr_2_s = cp.array([i/40 for i in range(80)])
 
 executor = submitit.AutoExecutor(folder="utils/results")
 
-executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 0, slurm_array_parallelism = 1, slurm_partition = "gpu")
+executor.update_parameters(timeout_min = 150, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 1, slurm_partition = "gpu")
 
 jobs = []
 with executor.batch():
 	for theta, w_student in students:
-		job = executor.submit(n_or_more_neg_exp, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 1600, experiment_path = run_path)
+		job = executor.submit(n_or_more_neg_exp, D = 400, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 800, experiment_path = run_path)
 		jobs.append(job)

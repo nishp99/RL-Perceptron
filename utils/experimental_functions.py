@@ -1,8 +1,7 @@
 import numpy as np
 import cupy as cp
 import cupy.random as rnd
-#import scipy
-#import scipy.special
+import numpy.random as nprnd
 import math
 import os
 
@@ -16,54 +15,29 @@ def p_T_correct(Q, R, T):
 generates teacher
 """
 def gen_teacher(D):
-  """x_cpu = np.array([1,2,3])
-        y_cpu = np.array([4,5,6])
-        z_cpu = x_cpu + y_cpu
-        z_c = cp.get_array_module(z_cpu)
-      
-        x_gpu = cp.asarray(x_cpu)
-        cp.cuda.Stream.null.synchronize()
-        y_gpu = cp.asarray(y_cpu)
-        cp.cuda.Stream.null.synchronize()
-        z_gpu = x_gpu + y_gpu
-        cp.cuda.Stream.null.synchronize()
-        z_g = cp.get_array_module(z_gpu)
-      
-        print('type z_cpu')
-        print(type(z_cpu))
-        print('type z_gpu')
-        print(type(z_gpu))
-        print('number of recognised devices:')
-        print(cp.cuda.runtime.getDeviceCount())
-        print('CPU name:')
-        print(z_c.__name__)
-        print('GPU name:')
-        print(z_g.__name__)
-        cp.cuda.Device(0).use()"""
-  teacher = rnd.randn(D)
-  teacher /= cp.sqrt(teacher @ teacher/D)
+  teacher = nprnd.randn(D)
+  teacher /= np.sqrt(teacher @ teacher/D)
   return teacher
 
 """
 generate series of students from 0 to 180 degrees from teacher
 """
 def generate_students(w_teacher, D, norm):
-  #cp.cuda.Device(0).use()
-  w_student = -w_teacher + rnd.randn(D)/(D/4)
-  students = [w_student.copy()]
+  w_student = -w_teacher + nprnd.randn(D)/(D/4)
+  students = [np.copy(w_student)]
 
-  while w_student @ w_teacher/(20*cp.linalg.norm(w_student)) < 0.9995:
-    mag = cp.linalg.norm(w_student)
+  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
+    mag = np.linalg.norm(w_student)
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
-    z /= cp.linalg.norm(z)
+    z /= np.linalg.norm(z)
     w_student -= z
-    w_student /= cp.linalg.norm(w_student)
+    w_student /= np.linalg.norm(w_student)
     w_student *= norm
     students.append(w_student.copy())
   
-  overlaps = [w_teacher @ student/cp.linalg.norm(student)/cp.sqrt(D) for student in students]
-  angles = [cp.round(cp.arccos(overlap),2) for overlap in overlaps]
+  overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
+  angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
   return result
@@ -160,9 +134,13 @@ output - dictionary of
 
 
 def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
-  #cp.cuda.Device(0).use()
+  cp.cuda.Device(0).use()
+  teacher = cp.asarray(teacher)
+  student = cp.asarray(student)
+
   path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
   os.mkdir(path)
+
 
   #create grid of learning_rates
   x_1, y_1 = cp.meshgrid(lr_2_s, lr_1_s)
