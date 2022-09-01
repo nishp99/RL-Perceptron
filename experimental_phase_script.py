@@ -18,7 +18,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 results_path = os.path.join("utils", "results")
 os.makedirs(results_path, exist_ok = True)
 
-experiment_path = os.path.join(results_path, "n_or_more_exper_5")
+experiment_path = os.path.join(results_path, "n_or_more_exper")
 os.makedirs(experiment_path, exist_ok = True)
 
 run_path = os.path.join(experiment_path, run_timestamp)
@@ -27,8 +27,8 @@ os.mkdir(run_path)
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
 w_teacher = gen_teacher(400)
-vectors = generate_students(w_teacher, 400, 5)
-students = vectors[56:57]
+vectors = generate_students(w_teacher, 400, 20)
+students = vectors[22:23]
 
 #s
 # set range of values for learning rates 1 and 2, iterate through these values and the students
