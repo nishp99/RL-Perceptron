@@ -26,12 +26,14 @@ def generate_students(w_teacher, D, norm):
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
-  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
+  #while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
+  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.995:
     mag = np.linalg.norm(w_student)
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
     z /= np.linalg.norm(z)
-    w_student -= z
+    #w_student -= z
+    w_student -= 0.24*z
     w_student /= np.linalg.norm(w_student)
     w_student *= norm
     students.append(w_student.copy())
