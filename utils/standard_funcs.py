@@ -260,14 +260,9 @@ def all(D, teacher, rad, student, T, lr_1, steps, experiment_path):
 
     step += 1
 
-
-  normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
-  theta = np.arccos(normalised_overlap)
-  P = (1- theta/np.pi)
-  
-  data['p'] = P
-  data['lr'] = L_s
-  data['ang'] = rad
+  """normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+        theta = np.arccos(normalised_overlap)
+        P = (1- theta/np.pi)"""
 
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
