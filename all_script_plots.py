@@ -4,8 +4,8 @@ import cupy.random as rnd
 import scipy
 import scipy.special
 import math
-from utils import exper_standard_functions
-from utils.exper_standard_functions import *
+from utils import exper_standard_funcs
+from utils.exper_standard_funcs import *
 from utils import standard_funcs
 from utils.standard_funcs import *
 
