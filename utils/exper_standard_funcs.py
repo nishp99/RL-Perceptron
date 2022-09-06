@@ -53,7 +53,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   teacher = cp.asarray(teacher)
   student = cp.asarray(student)
 
-  teachers = cp.tile(cp.expand_dims(teacher, axis = 0), (20, 1))
+  teachers = cp.tile(cp.expand_dims(teacher, axis = 0), (10, 1))
   cp.cuda.Stream.null.synchronize()
 
   path = os.path.join(experiment_path, f'exp_{T}-{n}-{rad}')
@@ -70,7 +70,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
         size_2 = lr_2_s.size"""
 
   #initialize all students
-  W = cp.tile(cp.expand_dims(student, axis = 0), (20, 1))
+  W = cp.tile(cp.expand_dims(student, axis = 0), (10, 1))
   cp.cuda.Stream.null.synchronize()
 
   #create dictionary of order parameters
@@ -96,7 +96,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
                 X = cp.tile(cp.expand_dims(cp.expand_dims(xs, axis = 1), axis = 1), (1,size_1, size_2, 1))
                 cp.cuda.Stream.null.synchronize()"""
 
-    X = rnd.randn(T, 20, D)
+    X = rnd.randn(T, 10, D)
 
     #predicted classification
     Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis = 0) * X, axis = 2))
@@ -169,10 +169,10 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   teacher = cp.asarray(teacher)
   student = cp.asarray(student)
 
-  teachers = cp.tile(cp.expand_dims(teacher, axis = 0), (20, 1))
+  teachers = cp.tile(cp.expand_dims(teacher, axis = 0), (10, 1))
   cp.cuda.Stream.null.synchronize()
 
-  W = cp.tile(cp.expand_dims(student, axis = 0), (20, 1))
+  W = cp.tile(cp.expand_dims(student, axis = 0), (10, 1))
   cp.cuda.Stream.null.synchronize()
 
   path = os.path.join(experiment_path, f'exp_{T}-{rad}')
@@ -193,7 +193,7 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   dt = 1 / D
 
   while step < num_steps:
-    X = rnd.randn(T, 20, D)
+    X = rnd.randn(T, 10, D)
     #predicted classification
     Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis = 0) * X, axis = 2))
     cp.cuda.Stream.null.synchronize()
