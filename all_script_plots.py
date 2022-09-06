@@ -31,7 +31,7 @@ os.mkdir(run_path)
 
 w_teacher = gen_teacher(400)
 vectors = generate_students(w_teacher, 400, 20)
-students = vectors[31:32]
+student = vectors[31]
 T_s = [5,10,12]
 
 #s
