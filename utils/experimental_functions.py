@@ -33,7 +33,7 @@ def generate_students(w_teacher, D, norm):
     z -= (z @ w_student)*w_student/mag**2
     z /= np.linalg.norm(z)
     #w_student -= z
-    w_student -= 0.06*z
+    w_student -= z
     #w_student -= 3.78*z
     #w_student -= 13*z
     w_student /= np.linalg.norm(w_student)
