@@ -23,7 +23,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 results_path = os.path.join("utils", "results")
 os.makedirs(results_path, exist_ok = True)
 
-experiment_path = os.path.join(results_path, "neg_all_case")
+experiment_path = os.path.join(results_path, "all_case")
 os.makedirs(experiment_path, exist_ok = True)
 
 run_path = os.path.join(experiment_path, run_timestamp)
@@ -44,7 +44,7 @@ executor_1.update_parameters(timeout_min = 1800, mem_gb = 4, gpus_per_node = 1, 
 jobs = []
 with executor_1.batch():
 	for T in T_s:
-		job = executor_1.submit(all_neg_exp, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0.005 , steps = 8000, experiment_path = run_path)
+		job = executor_1.submit(all_neg_exp, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
 		jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/results")
@@ -54,6 +54,6 @@ executor_2.update_parameters(timeout_min = 1800, mem_gb = 4, gpus_per_node = 0, 
 jobs_2 = []
 with executor_2.batch():
 	for T in T_s:
-		job_2 = executor_2.submit(all_neg, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0.005, steps = 8000, experiment_path = run_path)
+		job_2 = executor_2.submit(all_neg, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
 		jobs_2.append(job_2)
 
