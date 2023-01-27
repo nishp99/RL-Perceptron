@@ -14,15 +14,15 @@ def p_T_correct(Q, R, T):
 """
 generates teacher
 """
-def gen_teacher(D):
+"""def gen_teacher(D):
   teacher = rnd.randn(D)
   teacher /= np.sqrt(teacher @ teacher/D)
-  return teacher
+  return teacher"""
 
 """
 generate series of students from 0 to 180 degrees from teacher
 """
-def generate_students(w_teacher, D, norm):
+"""def generate_students(w_teacher, D, norm):
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
@@ -46,7 +46,7 @@ def generate_students(w_teacher, D, norm):
   angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
-  return result
+  return result"""
 
 """
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps
@@ -141,7 +141,7 @@ output - dictionary of
 
 def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_path):
 
-  path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
+  path = os.path.join(experiment_path, f'{T}-{n}-{rad}-{lr_2}')
   os.mkdir(path)
 
   R = teacher @ student /D

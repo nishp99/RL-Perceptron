@@ -22,18 +22,17 @@ def gen_teacher(D):
 """
 generate series of students from 0 to 180 degrees from teacher
 """
-def generate_students(w_teacher, D, norm):
+def generate_students(w_teacher, D, norm, step):
   w_student = -w_teacher + nprnd.randn(D)/(D/4)
   students = [np.copy(w_student)]
 
   #while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
-  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.995:
+  while w_student @ w_teacher/(np.sqrt(D)*np.linalg.norm(w_student)) < 0.995:
     mag = np.linalg.norm(w_student)
     z = w_student-w_teacher
     z -= (z @ w_student)*w_student/mag**2
     z /= np.linalg.norm(z)
-    #w_student -= z
-    w_student -= z
+    w_student -= step*z
     #w_student -= 3.78*z
     #w_student -= 13*z
     w_student /= np.linalg.norm(w_student)
@@ -56,7 +55,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   teachers = cp.tile(cp.expand_dims(teacher, axis = 0), (20, 1))
   cp.cuda.Stream.null.synchronize()
 
-  path = os.path.join(experiment_path, f'exp_{T}-{n}-{rad}')
+  path = os.path.join(experiment_path, f'exp_{T}-{n}-{rad}-{lr_2}')
   os.mkdir(path)
 
 
@@ -83,8 +82,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
     cp.cuda.Stream.null.synchronize()
     data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 8), 20))
-  data['Q'] = cp.zeros((int(steps / 8), 20))
+  data['R'] = cp.zeros((int(steps / 16), 20))
+  data['Q'] = cp.zeros((int(steps / 16), 20))
   cp.cuda.Stream.null.synchronize()
 
 
@@ -129,7 +128,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
     W += ((lr_1 + lr_2) * reward - lr_2) * hebbian_update / cp.sqrt(D)
     
     #log order parameters      
-    if step % 8*D == 0:
+    if step % 16*D == 0:
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D
@@ -139,8 +138,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
             data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
             data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
       # added bit!!!!
-      data['R'][int(step / (8 * D))] = cp.around(R, 5)
-      data['Q'][int(step / (8 * D))] = cp.around(Q, 5)
+      data['R'][int(step / (16 * D))] = cp.around(R, 5)
+      data['Q'][int(step / (16 * D))] = cp.around(Q, 5)
 
     step += 1
 
@@ -196,8 +195,8 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   cp.cuda.Stream.null.synchronize()
   data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 8), 20))
-  data['Q'] = cp.zeros((int(steps / 8), 20))
+  data['R'] = cp.zeros((int(steps / 16), 20))
+  data['Q'] = cp.zeros((int(steps / 16), 20))
   cp.cuda.Stream.null.synchronize()
 
   step = 0
@@ -223,7 +222,7 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
     W += ((lr_1 + lr_2) * reward - lr_2) * hebbian_update / cp.sqrt(D)
     
     #log order parameters      
-    if step % 8*D == 0:
+    if step % 16*D == 0:
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D
@@ -233,8 +232,8 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
       data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
       data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
       #added bit!!!!
-      data['R'][int(step/(8*D))] = cp.around(R,5)
-      data['Q'][int(step/(8*D))] = cp.around(Q,5)
+      data['R'][int(step/(16*D))] = cp.around(R,5)
+      data['Q'][int(step/(16*D))] = cp.around(Q,5)
 
     step += 1
 

@@ -20,7 +20,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 #os.mkdir(with name of unique identifier)
 
 #os.path.join(results, unique identifier)
-results_path = os.path.join("utils", "results")
+results_path = os.path.join("utils", "new_results")
 os.makedirs(results_path, exist_ok = True)
 
 experiment_path = os.path.join(results_path, "all_case")
@@ -31,29 +31,30 @@ os.mkdir(run_path)
 
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
-w_teacher = gen_teacher(400)
-vectors = generate_students(w_teacher, 400, 20)
-student = vectors[31]
-T_s = [5,10,12]
+
+w_teacher = gen_teacher(900)
+vectors = generate_students(w_teacher, 900, 30, 1)
+student = vectors[47]
+T_s = [5,9,12]
 
 #s
-executor_1 = submitit.AutoExecutor(folder="utils/results")
+executor_1 = submitit.AutoExecutor(folder="utils/new_results")
 
-executor_1.update_parameters(timeout_min = 1800, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 1, slurm_partition = "gpu")
+executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 1, slurm_partition = "gpu")
 
 jobs = []
 with executor_1.batch():
 	for T in T_s:
-		job = executor_1.submit(all_neg_exp, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
+		job = executor_1.submit(all_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
 		jobs.append(job)
 
-executor_2 = submitit.AutoExecutor(folder="utils/results")
+executor_2 = submitit.AutoExecutor(folder="utils/new_results")
 
-executor_2.update_parameters(timeout_min = 1800, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 1, slurm_array_parallelism = 128)
+executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 1, slurm_array_parallelism = 128)
 
 jobs_2 = []
 with executor_2.batch():
 	for T in T_s:
-		job_2 = executor_2.submit(all_neg, D = 400, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
+		job_2 = executor_2.submit(all_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
 		jobs_2.append(job_2)
 
