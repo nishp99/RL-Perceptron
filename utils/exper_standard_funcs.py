@@ -82,8 +82,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
     cp.cuda.Stream.null.synchronize()
     data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 16), 20))
-  data['Q'] = cp.zeros((int(steps / 16), 20))
+  data['R'] = cp.zeros((int(steps / 16)+1, 20))
+  data['Q'] = cp.zeros((int(steps / 16)+1, 20))
   cp.cuda.Stream.null.synchronize()
 
 
@@ -92,6 +92,19 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   dt = 1 / D
 
   while step < num_steps:
+    if step % 16*D == 0:
+      print(step)
+      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
+      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
+
+      """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
+            data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
+            data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
+            data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
+      # added bit!!!!
+      data['R'][int(step / (16 * D))] = cp.around(R, 5)
+      data['Q'][int(step / (16 * D))] = cp.around(Q, 5)
+
     #sample T examples
     """xs = rnd.randn(T, D)
                 cp.cuda.Stream.null.synchronize()
@@ -127,19 +140,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
     #update students
     W += ((lr_1 + lr_2) * reward - lr_2) * hebbian_update / cp.sqrt(D)
     
-    #log order parameters      
-    if step % 16*D == 0:
-      print(step)
-      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
-      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
-
-      """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
-            data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
-            data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
-            data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
-      # added bit!!!!
-      data['R'][int(step / (16 * D))] = cp.around(R, 5)
-      data['Q'][int(step / (16 * D))] = cp.around(Q, 5)
+    #log order parameters
 
     step += 1
 
@@ -150,10 +151,12 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
         theta = cp.arccos(normalised_overlap)
         P = (1- theta/np.pi)"""
 
-  """data['r_mean'] = cp.asnumpy(data['r_mean'])
-    data['r_std'] = cp.asnumpy(data['r_std'])
-    data['q_mean'] = cp.asnumpy(data['q_mean'])
-    data['q_std'] = cp.asnumpy(data['q_std'])"""
+  R = cp.sum(teachers * cp.copy(W), axis=1) / D
+  Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+
+  # added bit!!!!
+  data['R'][-1] = cp.around(R, 5)
+  data['Q'][-1] = cp.around(Q, 5)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
@@ -195,15 +198,27 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   cp.cuda.Stream.null.synchronize()
   data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 16), 20))
-  data['Q'] = cp.zeros((int(steps / 16), 20))
+  data['R'] = cp.zeros((int(steps / 16)+1, 20))
+  data['Q'] = cp.zeros((int(steps / 16)+1, 20))
   cp.cuda.Stream.null.synchronize()
 
   step = 0
   num_steps = steps * D
   dt = 1 / D
 
-  while step < num_steps:
+  while step < num_steps
+    if step % 16*D == 0:
+      print(step)
+      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
+      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
+
+      """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
+      data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
+      data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
+      data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
+      #added bit!!!!
+      data['R'][int(step/(16*D))] = cp.around(R,5)
+      data['Q'][int(step/(16*D))] = cp.around(Q,5)
     X = rnd.randn(T, 20, D)
     #predicted classification
     Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis = 0) * X, axis = 2))
@@ -220,20 +235,6 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
     hebbian_update = cp.mean(cp.expand_dims(Y_pred, axis = 2) * X, axis = 0)
 
     W += ((lr_1 + lr_2) * reward - lr_2) * hebbian_update / cp.sqrt(D)
-    
-    #log order parameters      
-    if step % 16*D == 0:
-      print(step)
-      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
-      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
-
-      """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
-      data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
-      data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
-      data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
-      #added bit!!!!
-      data['R'][int(step/(16*D))] = cp.around(R,5)
-      data['Q'][int(step/(16*D))] = cp.around(Q,5)
 
     step += 1
 
@@ -248,6 +249,17 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   data['r_std'] = cp.asnumpy(data['r_std'])
   data['q_mean'] = cp.asnumpy(data['q_mean'])
   data['q_std'] = cp.asnumpy(data['q_std'])"""
+
+  R = cp.sum(teachers * cp.copy(W), axis=1) / D
+  Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+
+  """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
+  data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
+  data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
+  data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
+  # added bit!!!!
+  data['R'][-1] = cp.around(R, 5)
+  data['Q'][-1] = cp.around(Q, 5)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])

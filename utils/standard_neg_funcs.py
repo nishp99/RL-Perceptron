@@ -148,14 +148,18 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   Q = student @ student /D
 
   data = dict()
-  data['r'] = np.zeros(int(steps/8))
-  data['q'] = np.zeros(int(steps/8))
+  data['r'] = np.zeros(int(steps/8)+1)
+  data['q'] = np.zeros(int(steps/8)+1)
 
   step = 0
   num_steps = steps * D
   dt = 1 / D
 
   while step < num_steps:
+    if step % 8*D == 0:
+      print(step)
+      data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
+      data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
     p_correct = (1- theta/np.pi)
@@ -192,11 +196,6 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
     #update r, q
     R += dt * dR
     Q += dt * dQ
-
-    if step % 8*D == 0:
-      print(step)
-      data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
-      data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
       
     step += 1
 
@@ -204,7 +203,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
         theta = np.arccos(normalised_overlap)
         P = (1- theta/np.pi)"""
 
-
+  data['r'][-1] = np.around(np.copy(R), 5)
+  data['q'][-1] = np.around(np.copy(Q), 5)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
@@ -224,14 +224,17 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   Q = student @ student /D
 
   data = dict()
-  data['r'] = np.zeros(int(steps/8))
-  data['q'] = np.zeros(int(steps/8))
+  data['r'] = np.zeros(int(steps/8)+1)
+  data['q'] = np.zeros(int(steps/8)+1)
 
   step = 0
   num_steps = steps * D
   dt = 1/D
 
   while step < num_steps:
+    if step % 8*D == 0:
+      data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
+      data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
     #compute quantities needed for updates
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
@@ -251,16 +254,14 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
     R += dt * dR
     Q += dt * dQ
 
-    if step % 8*D == 0:
-      data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
-      data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
-
     step += 1
 
 
   """normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
         theta = np.arccos(normalised_overlap)
         P = (1- theta/np.pi)"""
+  data['r'][-1] = np.around(np.copy(R), 5)
+  data['q'][-1] = np.around(np.copy(Q), 5)
 
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
