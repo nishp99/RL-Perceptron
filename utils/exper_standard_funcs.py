@@ -206,7 +206,7 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   num_steps = steps * D
   dt = 1 / D
 
-  while step < num_steps
+  while step < num_steps:
     if step % 16*D == 0:
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
