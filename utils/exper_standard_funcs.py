@@ -183,7 +183,7 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   W = cp.tile(cp.expand_dims(student, axis = 0), (20, 1))
   cp.cuda.Stream.null.synchronize()
 
-  path = os.path.join(experiment_path, f'exp_{T}-{rad}')
+  path = os.path.join(experiment_path, f'exp_{T}-{rad}-{lr_2}')
   os.mkdir(path)
 
   data = dict()
