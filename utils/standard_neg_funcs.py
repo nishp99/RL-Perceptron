@@ -204,8 +204,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
         theta = np.arccos(normalised_overlap)
         P = (1- theta/np.pi)"""
 
-  data['r'][int(steps/8)+1] = np.around(np.copy(R), 5)
-  data['q'][int(steps/8)+1] = np.around(np.copy(Q), 5)
+  data['r'][int(steps/8)] = np.around(np.copy(R), 5)
+  data['q'][int(steps/8)] = np.around(np.copy(Q), 5)
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 

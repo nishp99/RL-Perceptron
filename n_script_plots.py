@@ -47,7 +47,7 @@ executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, 
 jobs = []
 with executor_1.batch():
 	for n in n_s:
-		job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
+		job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0 , steps = 2000, experiment_path = run_path)
 		jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/new_results")
@@ -57,6 +57,6 @@ executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, 
 jobs_2 = []
 with executor_2.batch():
 	for n in n_s:
-		job_2 = executor_2.submit(n_or_more_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
+		job_2 = executor_2.submit(n_or_more_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0, steps = 2000, experiment_path = run_path)
 		jobs_2.append(job_2)
 

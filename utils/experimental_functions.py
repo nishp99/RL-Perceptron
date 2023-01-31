@@ -167,6 +167,10 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   cp.cuda.Stream.null.synchronize()
   data['q'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,int(steps/8)))
   cp.cuda.Stream.null.synchronize()
+  """data['r'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,steps))
+  cp.cuda.Stream.null.synchronize()
+  data['q'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,steps))
+  cp.cuda.Stream.null.synchronize()"""
 
 
   step = 0
@@ -174,6 +178,10 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   dt = 1 / D
 
   while step < num_steps:
+    if step % 8*D == 0:
+      print(step)
+      data['r'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
+      data['q'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)
     #sample T examples
     xs = rnd.randn(T, D)
     cp.cuda.Stream.null.synchronize()
@@ -208,10 +216,10 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
     W += (cp.expand_dims(L_s[:,:,0] + L_s[:,:,1], axis = 2) * reward - cp.expand_dims(L_s[:,:,1], axis = 2)) * hebbian_update / cp.sqrt(D)
     
     #log order parameters      
-    if step % 8*D == 0:
+    """if step % 8*D == 0:
       print(step)
       data['r'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
-      data['q'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)
+      data['q'][:,:,int(step/(8*D))] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)"""
       
     step += 1
 
