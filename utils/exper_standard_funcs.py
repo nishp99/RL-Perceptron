@@ -93,7 +93,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
 
   while step < num_steps:
     if step % 16*D == 0:
-      #print(step)
+      print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D
 
@@ -104,8 +104,6 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
       # added bit!!!!
       data['R'][int(step / (16 * D)), :] = cp.around(cp.copy(R), 5)
       data['Q'][int(step / (16 * D)), :] = cp.around(cp.copy(Q), 5)
-      print(data['R'][0])
-      print(data['Q'][0])
 
     #sample T examples
     """xs = rnd.randn(T, D)
@@ -162,8 +160,6 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
-  print(data['R'][0])
-  print(data['Q'][0])
 
   """data['p'] = cp.asnumpy(P)
         data['lr'] = cp.asnumpy(L_s)
