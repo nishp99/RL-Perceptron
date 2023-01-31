@@ -145,7 +145,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   teacher = cp.asarray(teacher)
   student = cp.asarray(student)
 
-  path = os.path.join(experiment_path, f'{i}-{T}-{n}-{rad}}')
+  path = os.path.join(experiment_path, f'{i}-{T}-{n}-{rad}')
   os.mkdir(path)
 
 
