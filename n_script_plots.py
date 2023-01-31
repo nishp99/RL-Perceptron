@@ -40,7 +40,7 @@ T = 12
 #n_s = [7,9,11]
 n_s = [9]
 #s
-executor_1 = submitit.AutoExecutor(folder="utils/new_results")
+"""executor_1 = submitit.AutoExecutor(folder="utils/new_results")
 
 executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 1, slurm_partition = "gpu")
 
@@ -48,7 +48,7 @@ jobs = []
 with executor_1.batch():
 	for n in n_s:
 		job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0 , steps = 2000, experiment_path = run_path)
-		jobs.append(job)
+		jobs.append(job)"""
 
 executor_2 = submitit.AutoExecutor(folder="utils/new_results")
 

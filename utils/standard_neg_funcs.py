@@ -198,9 +198,13 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
     dQ = (2 * (lr_1 + lr_2)/(T*np.sqrt(D)) * (a*C_1*np.sqrt(D*Q/2) * half_overlap + b*C_2*np.sqrt(D*Q/2)*half_incorrect) + 
           (lr_1**2 - lr_2**2)/(T**2 *D) * (c*T*D + d*C_1**2 + e* C_2**2)) - 2*lr_2 * np.sqrt(2*Q/np.pi) +lr_2**2/(T*D)*(D + (T-1)*2/np.pi)
 
+    print(data['r'][0])
+    print(data['q'][0])
     #update r, q
     R += dt * dR
     Q += dt * dQ
+    print(data['r'][0])
+    print(data['q'][0])
       
     step += 1
 
