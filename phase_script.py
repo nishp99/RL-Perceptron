@@ -17,7 +17,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 #os.mkdir(with name of unique identifier)
 
 #os.path.join(results, unique identifier)
-results_path = os.path.join("utils", "results")
+results_path = os.path.join("utils", "new_results")
 os.makedirs(results_path, exist_ok = True)
 
 experiment_path = os.path.join(results_path, "n_or_more")

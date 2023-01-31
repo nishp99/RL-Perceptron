@@ -22,7 +22,7 @@ def gen_teacher(D):
 """
 generate series of students from 0 to 180 degrees from teacher
 """
-def generate_students(w_teacher, D, norm):
+"""def generate_students(w_teacher, D, norm):
   w_student = -w_teacher + rnd.randn(D)/(D/4)
   students = [w_student.copy()]
 
@@ -46,7 +46,7 @@ def generate_students(w_teacher, D, norm):
   angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
-  return result
+  return result"""
 
 """
 input - dimension, teacher, student, episode length, threshold number for correctness, pos and neg learning rates, number of steps

@@ -22,26 +22,27 @@ def gen_teacher(D):
 """
 generate series of students from 0 to 180 degrees from teacher
 """
-def generate_students(w_teacher, D, norm):
-  w_student = -w_teacher + nprnd.randn(D)/(D/4)
+
+
+def generate_students(w_teacher, D, norm, step):
+  w_student = -w_teacher + nprnd.randn(D) / (D / 4)
   students = [np.copy(w_student)]
 
-  #while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
-  while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.995:
+  # while w_student @ w_teacher/(20*np.linalg.norm(w_student)) < 0.9995:
+  while w_student @ w_teacher / (np.sqrt(D) * np.linalg.norm(w_student)) < 0.995:
     mag = np.linalg.norm(w_student)
-    z = w_student-w_teacher
-    z -= (z @ w_student)*w_student/mag**2
+    z = w_student - w_teacher
+    z -= (z @ w_student) * w_student / mag ** 2
     z /= np.linalg.norm(z)
-    #w_student -= z
-    w_student -= z
-    #w_student -= 3.78*z
-    #w_student -= 13*z
+    w_student -= step * z
+    # w_student -= 3.78*z
+    # w_student -= 13*z
     w_student /= np.linalg.norm(w_student)
     w_student *= norm
     students.append(w_student.copy())
-  
-  overlaps = [w_teacher @ student/np.linalg.norm(student)/np.sqrt(D) for student in students]
-  angles = [np.round(np.arccos(overlap),2) for overlap in overlaps]
+
+  overlaps = [w_teacher @ student / np.linalg.norm(student) / np.sqrt(D) for student in students]
+  angles = [np.round(np.arccos(overlap), 2) for overlap in overlaps]
 
   result = [i for i in zip(angles, students)]
   return result
@@ -137,14 +138,14 @@ output - dictionary of
   """
 
 
-def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path):
+def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, experiment_path, i):
   cp.cuda.Device(0).use()
   lr_1_s = cp.asarray(lr_1_s)
   lr_2_s = cp.asarray(lr_2_s)
   teacher = cp.asarray(teacher)
   student = cp.asarray(student)
 
-  path = os.path.join(experiment_path, f'{T}-{n}-{rad}')
+  path = os.path.join(experiment_path, f'{i}-{T}-{n}-{rad}}')
   os.mkdir(path)
 
 
