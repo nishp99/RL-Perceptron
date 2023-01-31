@@ -147,9 +147,6 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   R = teacher @ student /D
   Q = student @ student /D
 
-  print(R)
-  print(Q)
-
   data = dict()
   data['r'] = np.zeros(int(steps/8)+1)
   data['q'] = np.zeros(int(steps/8)+1)
@@ -163,6 +160,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
       print(step)
       data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
       data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
+      print(data['r'][0])
+      print(data['q'][0])
+      poo
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
     p_correct = (1- theta/np.pi)
