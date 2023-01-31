@@ -96,6 +96,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D
+      print(R)
+      print(Q)
 
       """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
             data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)

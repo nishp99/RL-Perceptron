@@ -8,8 +8,8 @@ import os
 """
 Returns the test accuracy for a teacher-student pair with the given overlaps.
 """
-def p_T_correct(Q, R, T):
-    return (1 - 1 / np.pi * np.arccos(R / np.sqrt(Q)))**T
+"""def p_T_correct(Q, R, T):
+    return (1 - 1 / np.pi * np.arccos(R / np.sqrt(Q)))**T"""
 
 """
 generates teacher
@@ -146,6 +146,9 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
 
   R = teacher @ student /D
   Q = student @ student /D
+
+  print(R)
+  print(Q)
 
   data = dict()
   data['r'] = np.zeros(int(steps/8)+1)
