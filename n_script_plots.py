@@ -37,8 +37,8 @@ vectors = generate_students(w_teacher, 900, 30, 1)
 student = vectors[47]
 #T_s = [5,9,12]
 T = 12
-n_s = [7,9,11]
-
+#n_s = [7,9,11]
+n_s = [9]
 #s
 executor_1 = submitit.AutoExecutor(folder="utils/new_results")
 
