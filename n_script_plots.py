@@ -23,7 +23,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 results_path = os.path.join("utils", "new_results")
 os.makedirs(results_path, exist_ok = True)
 
-experiment_path = os.path.join(results_path, "n_case_init_test")
+experiment_path = os.path.join(results_path, "n_case_long")
 os.makedirs(experiment_path, exist_ok = True)
 
 run_path = os.path.join(experiment_path, run_timestamp)
