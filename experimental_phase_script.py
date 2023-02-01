@@ -46,7 +46,7 @@ jobs = []
 with executor_1.batch():
 	for theta, w_student in students:
 		for i in range(10):
-			job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 4800, experiment_path = run_path)
+			job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = theta, student = w_student, T = 12, n = 9, lr_1_s = lr_1_s, lr_2_s = lr_2_s, steps = 4800, experiment_path = run_path, i)
 			jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/new_results")
