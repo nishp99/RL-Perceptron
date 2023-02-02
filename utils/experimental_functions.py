@@ -174,11 +174,11 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
   data['q'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:,:,0], dtype = float), axis =2), (1,1,steps))
   cp.cuda.Stream.null.synchronize()"""
 
-  data_2 = dict()
+  """data_2 = dict()
   data_2['r'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:, :, 0], dtype=float), axis=2), (1, 1, steps))
   cp.cuda.Stream.null.synchronize()
   data_2['q'] = cp.tile(cp.expand_dims(cp.zeros_like(L_s[:, :, 0], dtype=float), axis=2), (1, 1, steps))
-  cp.cuda.Stream.null.synchronize()
+  cp.cuda.Stream.null.synchronize()"""
 
 
   step = 0
@@ -190,10 +190,10 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
       print(step)
       data['r'][:,:,int(step/D)] = cp.around(cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D, 5)
       data['q'][:,:,int(step/D)] = cp.around(cp.sum(cp.copy(W)**2, axis = 2)/D, 5)
-      if step % 100*D == 0:
+      """if step % 100*D == 0:
         data_2['r'] = cp.asnumpy(cp.copy(data['r']))
         data_2['q'] = cp.asnumpy(cp.copy(data['q']))
-        np.save(file_path, data_2)
+        np.save(file_path, data_2)"""
 
     #sample T examples
     xs = rnd.randn(T, D)
@@ -237,18 +237,18 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1_s, lr_2_s, steps, exp
     step += 1
 
   #log final accuracy
-  R = cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D
-  Q = cp.sum(cp.copy(W)**2, axis = 2)/D
-  normalised_overlap = cp.divide(R,cp.sqrt(Q))
-  theta = cp.arccos(normalised_overlap)
-  P = (1- theta/np.pi)
+  #R = cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D
+  #Q = cp.sum(cp.copy(W)**2, axis = 2)/D
+  #normalised_overlap = cp.divide(R,cp.sqrt(Q))
+  #theta = cp.arccos(normalised_overlap)
+  #P = (1- theta/np.pi)
 
   data['r'] = cp.asnumpy(data['r'])
   data['q'] = cp.asnumpy(data['q'])
 
-  data['p'] = cp.asnumpy(P)
-  data['lr'] = cp.asnumpy(L_s)
-  data['ang'] = rad
+  #data['p'] = cp.asnumpy(P)
+  #data['lr'] = cp.asnumpy(L_s)
+  #data['ang'] = rad
 
   np.save(file_path, data)
 
