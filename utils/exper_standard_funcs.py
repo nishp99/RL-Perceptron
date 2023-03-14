@@ -3,6 +3,7 @@ import cupy as cp
 import cupy.random as rnd
 import numpy.random as nprnd
 import math
+import copy
 import os
 
 """
@@ -94,16 +95,16 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   while step < num_steps:
     if step % 16*D == 0:
       print(step)
-      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
-      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
+      R = cp.sum(teachers * copy.deepcopy(W) , axis = 1)/D
+      Q = cp.sum(copy.deepcopy(W)**2, axis = 1)/D
 
       """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
             data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
             data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
             data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
       # added bit!!!!
-      data['R'][int(step / (16 * D)), :] = cp.around(cp.copy(R), 5)
-      data['Q'][int(step / (16 * D)), :] = cp.around(cp.copy(Q), 5)
+      data['R'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(R), 5)
+      data['Q'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(Q), 5)
 
     #sample T examples
     """xs = rnd.randn(T, D)

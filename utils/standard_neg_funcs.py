@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import numpy.random as rnd
 import scipy
 import scipy.special
@@ -158,16 +159,16 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   while step < num_steps:
     if step % 8*D == 0:
       #print(step)
-      data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
-      data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
+      data['r'][int(step/(8*D))] = np.around(copy.deepcopy(R),5)
+      data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
 
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
     p_correct = (1- theta/np.pi)
     phi = (np.pi - theta)/2
 
-    C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta/2),(theta/2))
-    C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi),phi)
+    C_2 = np.sqrt(np.pi/2)*np.divide(np.sin(theta/2), (theta/2))
+    C_1 = np.sqrt(np.pi/2)*np.divide(np.sin(phi), phi)
 
     half_overlap = np.sqrt(1 + normalised_overlap)
     half_incorrect = np.sqrt(1 - normalised_overlap)
@@ -208,8 +209,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
         theta = np.arccos(normalised_overlap)
         P = (1- theta/np.pi)"""
 
-  data['r'][int(steps/8)] = np.around(np.copy(R), 5)
-  data['q'][int(steps/8)] = np.around(np.copy(Q), 5)
+  data['r'][int(steps/8)] = np.around(copy.deepcopy(R), 5)
+  data['q'][int(steps/8)] = np.around(copy.deepcopy(Q), 5)
   print(data['r'][0])
   print(data['q'][0])
   file_path = os.path.join(path, 'dic.npy')

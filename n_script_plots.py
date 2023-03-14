@@ -20,7 +20,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 #os.mkdir(with name of unique identifier)
 
 #os.path.join(results, unique identifier)
-results_path = os.path.join("utils", "new_results")
+results_path = os.path.join("utils", "new_new_results")
 os.makedirs(results_path, exist_ok = True)
 
 experiment_path = os.path.join(results_path, "n_case_long")
@@ -40,9 +40,9 @@ T = 12
 n_s = [7,9,11]
 #n_s = [9]
 #s
-executor_1 = submitit.AutoExecutor(folder="utils/new_results")
+executor_1 = submitit.AutoExecutor(folder="utils/new_new_results")
 
-executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 1, slurm_partition = "gpu")
+executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 3, slurm_partition = "gpu")
 
 jobs = []
 with executor_1.batch():
@@ -50,7 +50,7 @@ with executor_1.batch():
 		job = executor_1.submit(n_or_more_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, n = n, lr_1 = 1, lr_2 = 0 , steps = 16000, experiment_path = run_path)
 		jobs.append(job)
 
-executor_2 = submitit.AutoExecutor(folder="utils/new_results")
+executor_2 = submitit.AutoExecutor(folder="utils/new_new_results")
 
 executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 1, slurm_array_parallelism = 128)
 
