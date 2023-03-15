@@ -83,10 +83,13 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
     cp.cuda.Stream.null.synchronize()
     data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 16)+1, 20))
-  data['Q'] = cp.zeros((int(steps / 16)+1, 20))
-  cp.cuda.Stream.null.synchronize()
+  #data['R'] = cp.zeros((int(steps / 16)+1, 20))
+  #data['Q'] = cp.zeros((int(steps / 16)+1, 20))
 
+  #this is for the appending version
+  data['R'] = cp.zeros((1, 20))
+  data['Q'] = cp.zeros((1, 20))
+  cp.cuda.Stream.null.synchronize()
 
   step = 0
   num_steps = steps * D
@@ -103,8 +106,12 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
             data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
             data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
       # added bit!!!!
-      data['R'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(R), 5)
-      data['Q'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(Q), 5)
+      #data['R'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(R), 5)
+      #data['Q'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(Q), 5)
+
+      #for the appending version
+      data['R'] = cp.concatenate((data['R'], cp.around(copy.deepcopy(R), 5)), axis = 0)
+      data['Q'] = cp.concatenate((data['Q'], cp.around(copy.deepcopy(Q), 5)), axis = 0)
 
     #sample T examples
     """xs = rnd.randn(T, D)
@@ -156,8 +163,11 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
 
   # added bit!!!!
-  data['R'][int(steps / 16),:] = cp.around(cp.copy(R), 5)
-  data['Q'][int(steps / 16),:] = cp.around(cp.copy(Q), 5)
+  #data['R'][int(steps / 16),:] = cp.around(cp.copy(R), 5)
+  #data['Q'][int(steps / 16),:] = cp.around(cp.copy(Q), 5)
+  # for the appending version
+  data['R'] = cp.concatenate(data['R'], cp.around(copy.deepcopy(R), 5), axis=0)
+  data['Q'] = cp.concatenate(data['Q'], cp.around(copy.deepcopy(Q), 5), axis=0)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
@@ -199,8 +209,12 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   cp.cuda.Stream.null.synchronize()
   data['q_std'] = cp.zeros(int(steps/8))"""
   # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
-  data['R'] = cp.zeros((int(steps / 16)+1, 20))
-  data['Q'] = cp.zeros((int(steps / 16)+1, 20))
+  #data['R'] = cp.zeros((int(steps / 16)+1, 20))
+  #data['Q'] = cp.zeros((int(steps / 16)+1, 20))
+
+  # this is for the appending version
+  data['R'] = cp.zeros((1, 20))
+  data['Q'] = cp.zeros((1, 20))
   cp.cuda.Stream.null.synchronize()
 
   step = 0
@@ -218,8 +232,13 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
       data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
       data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
       #added bit!!!!
-      data['R'][int(step/(16*D))] = cp.around(R,5)
-      data['Q'][int(step/(16*D))] = cp.around(Q,5)
+      #data['R'][int(step/(16*D))] = cp.around(R,5)
+      #data['Q'][int(step/(16*D))] = cp.around(Q,5)
+
+      # for the appending version
+      data['R'] = cp.concatenate(data['R'], cp.around(copy.deepcopy(R), 5), axis=0)
+      data['Q'] = cp.concatenate(data['Q'], cp.around(copy.deepcopy(Q), 5), axis=0)
+
     X = rnd.randn(T, 20, D)
     #predicted classification
     Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis = 0) * X, axis = 2))
@@ -259,8 +278,12 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
   data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
   # added bit!!!!
-  data['R'][-1] = cp.around(R, 5)
-  data['Q'][-1] = cp.around(Q, 5)
+  #data['R'][-1] = cp.around(R, 5)
+  #data['Q'][-1] = cp.around(Q, 5)
+
+  # for the appending version
+  data['R'] = cp.concatenate(data['R'], cp.around(copy.deepcopy(R), 5), axis=0)
+  data['Q'] = cp.concatenate(data['Q'], cp.around(copy.deepcopy(Q), 5), axis=0)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
