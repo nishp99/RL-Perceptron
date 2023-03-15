@@ -153,8 +153,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   #data['q'] = np.zeros(int(steps/8)+1)
 
   #for the appending version
-  data['r'] = np.zeros((1))
-  data['q'] = np.zeros((1))
+  data['r'] = []
+  data['q'] = []
 
   step = 0
   num_steps = steps * D
@@ -167,8 +167,8 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
       #data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
 
       #for appending version
-      data['r'] = np.concatenate(data['r'], np.around(copy.deepcopy(R),5))
-      data['q'] = np.concatenate(data['q'], np.around(copy.deepcopy(Q), 5))
+      data['r'].append(np.around(copy.deepcopy(R),5))
+      data['q'].append(np.around(copy.deepcopy(Q), 5))
 
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
@@ -221,10 +221,14 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   #data['q'][int(steps/8)] = np.around(copy.deepcopy(Q), 5)
 
   # for appending version
-  data['r'] = np.concatenate(data['r'], np.around(copy.deepcopy(R), 5))
-  data['q'] = np.concatenate(data['q'], np.around(copy.deepcopy(Q), 5))
+  data['r'].append(np.around(copy.deepcopy(R), 5))
+  data['q'].append(np.around(copy.deepcopy(Q), 5))
   print(data['r'][0])
   print(data['q'][0])
+
+  data['r'] = np.asarray(data['r'])
+  data['q'] = np.asarray(data['q'])
+
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
 
@@ -248,8 +252,8 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   #data['q'] = np.zeros(int(steps/8)+1)
 
   # for the appending version
-  data['r'] = np.zeros((1))
-  data['q'] = np.zeros((1))
+  data['r'] = []
+  data['q'] = []
 
   step = 0
   num_steps = steps * D
@@ -261,8 +265,8 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
       #data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
 
       # for appending version
-      data['r'] = np.concatenate(data['r'], np.around(copy.deepcopy(R), 5))
-      data['q'] = np.concatenate(data['q'], np.around(copy.deepcopy(Q), 5))
+      data['r'].append(np.around(copy.deepcopy(R), 5))
+      data['q'].append(np.around(copy.deepcopy(Q), 5))
     #compute quantities needed for updates
     normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
     theta = np.arccos(normalised_overlap)
@@ -291,8 +295,11 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   #data['r'][-1] = np.around(np.copy(R), 5)
   #data['q'][-1] = np.around(np.copy(Q), 5)
   # for appending version
-  data['r'] = np.concatenate(data['r'], np.around(copy.deepcopy(R), 5))
-  data['q'] = np.concatenate(data['q'], np.around(copy.deepcopy(Q), 5))
+  data['r'].append(np.around(copy.deepcopy(R), 5))
+  data['q'].append(np.around(copy.deepcopy(Q), 5))
+
+  data['r'] = np.asarray(data['r'])
+  data['q'] = np.asarray(data['q'])
 
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
