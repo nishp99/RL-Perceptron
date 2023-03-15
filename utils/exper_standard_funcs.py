@@ -110,8 +110,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
       #data['Q'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(Q), 5)
 
       #for the appending version
-      data['R'] = cp.concatenate((data['R'], cp.around(copy.deepcopy(R), 5).T), axis = 0)
-      data['Q'] = cp.concatenate((data['Q'], cp.around(copy.deepcopy(Q), 5).T), axis = 0)
+      data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis = 0)
+      data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis = 0)
 
     #sample T examples
     """xs = rnd.randn(T, D)
@@ -166,8 +166,8 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   #data['R'][int(steps / 16),:] = cp.around(cp.copy(R), 5)
   #data['Q'][int(steps / 16),:] = cp.around(cp.copy(Q), 5)
   # for the appending version
-  data['R'] = cp.concatenate((data['R'], cp.around(copy.deepcopy(R), 5).T), axis=0)
-  data['Q'] = cp.concatenate((data['Q'], cp.around(copy.deepcopy(Q), 5).T), axis=0)
+  data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+  data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
@@ -236,8 +236,8 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
       #data['Q'][int(step/(16*D))] = cp.around(Q,5)
 
       # for the appending version
-      data['R'] = cp.concatenate((data['R'], cp.around(copy.deepcopy(R), 5).T), axis=0)
-      data['Q'] = cp.concatenate((data['Q'], cp.around(copy.deepcopy(Q), 5).T), axis=0)
+      data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+      data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
 
     X = rnd.randn(T, 20, D)
     #predicted classification
@@ -282,8 +282,8 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   #data['Q'][-1] = cp.around(Q, 5)
 
   # for the appending version
-  data['R'] = cp.concatenate((data['R'], cp.around(copy.deepcopy(R), 5).T), axis=0)
-  data['Q'] = cp.concatenate((data['Q'], cp.around(copy.deepcopy(Q), 5).T), axis=0)
+  data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+  data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
 
   data['R'] = cp.asnumpy(data['R'])
   data['Q'] = cp.asnumpy(data['Q'])
