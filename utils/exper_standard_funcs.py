@@ -96,7 +96,7 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   dt = 1 / D
 
   while step < num_steps:
-    if step % 16*D == 0:
+    if step % (16*D) == 0:
       print(step)
       R = cp.sum(teachers * copy.deepcopy(W) , axis = 1)/D
       Q = cp.sum(copy.deepcopy(W)**2, axis = 1)/D
@@ -222,7 +222,7 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   dt = 1 / D
 
   while step < num_steps:
-    if step % 16*D == 0:
+    if step % (16*D) == 0:
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D
