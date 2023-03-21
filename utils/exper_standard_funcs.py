@@ -222,7 +222,13 @@ def all_neg_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path)
   dt = 1 / D
 
   while step < num_steps:
-    if step % (16*D) == 0:
+    if step < (D * 100):
+      if step % 8 == 0:
+        R = cp.sum(teachers * cp.copy(W), axis=1) / D
+        Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+        data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+        data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
+    elif step % (8*D) == 0:
       print(step)
       R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
       Q = cp.sum(cp.copy(W)**2, axis = 1)/D

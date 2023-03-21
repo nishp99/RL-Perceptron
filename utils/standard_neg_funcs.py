@@ -161,7 +161,11 @@ def n_or_more_neg(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experiment_
   dt = 1 / D
 
   while step < num_steps:
-    if step % (8*D) == 0:
+    if step < (D * 100):
+      if step % 8 == 0:
+        data['r'].append(np.around(copy.deepcopy(R), 5))
+        data['q'].append(np.around(copy.deepcopy(Q), 5))
+    elif step % (8*D) == 0:
       #print(step)
       #data['r'][int(step/(8*D))] = np.around(copy.deepcopy(R),5)
       #data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
