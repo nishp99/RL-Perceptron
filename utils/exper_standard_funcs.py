@@ -96,22 +96,28 @@ def n_or_more_neg_exp(D, teacher, rad, student, T, n, lr_1, lr_2, steps, experim
   dt = 1 / D
 
   while step < num_steps:
-    if step % (16*D) == 0:
+    if step < (D * 100):
+      if step % 8 == 0:
+        R = cp.sum(teachers * cp.copy(W), axis=1) / D
+        Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+        data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+        data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
+    elif step % (8*D) == 0:
       print(step)
-      R = cp.sum(teachers * copy.deepcopy(W) , axis = 1)/D
-      Q = cp.sum(copy.deepcopy(W)**2, axis = 1)/D
+      R = cp.sum(teachers * cp.copy(W) , axis = 1)/D
+      Q = cp.sum(cp.copy(W)**2, axis = 1)/D
 
       """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
-            data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
-            data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
-            data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
-      # added bit!!!!
-      #data['R'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(R), 5)
-      #data['Q'][int(step / (16 * D)), :] = cp.around(copy.deepcopy(Q), 5)
+      data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
+      data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
+      data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
+      #added bit!!!!
+      #data['R'][int(step/(16*D))] = cp.around(R,5)
+      #data['Q'][int(step/(16*D))] = cp.around(Q,5)
 
-      #for the appending version
-      data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis = 0)
-      data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis = 0)
+      # for the appending version
+      data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+      data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
 
     #sample T examples
     """xs = rnd.randn(T, D)
