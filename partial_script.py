@@ -49,7 +49,7 @@ jobs = []
 with executor_1.batch():
     for lr_2 in lr_2s:
         for n in n_s:
-            job = executor_1.submit(partial_exp, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2 , steps = 8000, experiment_path = run_path)
+            job = executor_1.submit(partial_exp, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2 , steps = 16000, experiment_path = run_path)
             jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/truefinal/partial")
@@ -60,5 +60,5 @@ jobs_2 = []
 with executor_2.batch():
     for lr_2 in lr_2s:
         for n in n_s:
-            job_2 = executor_2.submit(partial_ode, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2, steps = 8000, experiment_path = run_path)
+            job_2 = executor_2.submit(partial_ode, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2, steps = 16000, experiment_path = run_path)
             jobs_2.append(job_2)
