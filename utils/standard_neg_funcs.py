@@ -246,7 +246,7 @@ output - dictionary of
 
 
 def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
-    path = os.path.join(experiment_path, f'{T}-{rad}-{lr_2}')
+    path = os.path.join(experiment_path, f'{T}-{lr_2}-{rad}')
     os.mkdir(path)
 
     R = teacher @ student / D
