@@ -264,9 +264,14 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   dt = 1/D
 
   while step < num_steps:
-    if step % (8*D) == 0:
-      #data['r'][int(step/(8*D))] = np.around(np.copy(R),5)
-      #data['q'][int(step/(8*D))] = np.around(np.copy(Q),5)
+    if step < (D * 100):
+      if step % 8 == 0:
+        data['r'].append(np.around(copy.deepcopy(R), 5))
+        data['q'].append(np.around(copy.deepcopy(Q), 5))
+    elif step % (8 * D) == 0:
+      # print(step)
+      # data['r'][int(step/(8*D))] = np.around(copy.deepcopy(R),5)
+      # data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
 
       # for appending version
       data['r'].append(np.around(copy.deepcopy(R), 5))
@@ -309,3 +314,147 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   np.save(file_path, data)
 
   #save to path
+
+def partial_ode(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
+  path = os.path.join(experiment_path, f'{T}_{n}_{lr_2}')
+  os.mkdir(path)
+
+  R = teacher @ student / D
+  Q = student @ student / D
+
+  data = dict()
+  # data['r'] = np.zeros(int(steps/8)+1)
+  # data['q'] = np.zeros(int(steps/8)+1)
+
+  # for the appending version
+  data['r'] = []
+  data['q'] = []
+
+  step = 0
+  num_steps = steps * D
+  dt = 1 / D
+
+  while step < num_steps:
+    if step < (D * 100):
+      if step % 8 == 0:
+        data['r'].append(np.around(copy.deepcopy(R), 5))
+        data['q'].append(np.around(copy.deepcopy(Q), 5))
+    elif step % (8 * D) == 0:
+      # print(step)
+      # data['r'][int(step/(8*D))] = np.around(copy.deepcopy(R),5)
+      # data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
+
+      # for appending version
+      data['r'].append(np.around(copy.deepcopy(R), 5))
+      data['q'].append(np.around(copy.deepcopy(Q), 5))
+
+    normalised_overlap = np.divide(np.copy(R), np.sqrt(np.copy(Q)))
+    p_correct = (1 - 1 / np.pi * np.arccos(normalised_overlap))
+
+    # compute r,q updates
+    dR = ((1 / np.sqrt(2 * np.pi) * (1 + normalised_overlap) * (lr_1 * p_correct ** (T - n) + lr_2 * n / T) +
+           lr_2 * (T - n) / T * np.sqrt(2 / np.pi) * normalised_overlap * p_correct) * p_correct ** (n - 1))
+
+    dQ = (p_correct ** (n - 1) * np.sqrt(2 * Q / np.pi) * (
+              (1 + normalised_overlap) * (lr_1 * p_correct ** (T - n) + lr_2 * n / T) +
+              2 * lr_2 * (T - n) / T * p_correct) + p_correct ** n / T * (
+                    (lr_1 ** 2 + 2 * lr_1 * lr_2) * p_correct ** (T - n) + lr_2 ** 2))
+    #print(data['r'][0])
+    #print(data['q'][0])
+    # update r, q
+    R += dt * dR
+    Q += dt * dQ
+    #print(data['r'][0])
+    #print(data['q'][0])
+
+    step += 1
+
+  """normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+        theta = np.arccos(normalised_overlap)
+        P = (1- theta/np.pi)"""
+
+  # data['r'][int(steps/8)] = np.around(copy.deepcopy(R), 5)
+  # data['q'][int(steps/8)] = np.around(copy.deepcopy(Q), 5)
+
+  # for appending version
+  data['r'].append(np.around(copy.deepcopy(R), 5))
+  data['q'].append(np.around(copy.deepcopy(Q), 5))
+  print(data['r'][0])
+  print(data['q'][0])
+
+  data['r'] = np.asarray(data['r'])
+  data['q'] = np.asarray(data['q'])
+
+  file_path = os.path.join(path, 'dic.npy')
+  np.save(file_path, data)
+
+def bread_ode(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
+  path = os.path.join(experiment_path, f'{T}_{lr_2}')
+  os.mkdir(path)
+
+  R = teacher @ student / D
+  Q = student @ student / D
+
+  data = dict()
+  # data['r'] = np.zeros(int(steps/8)+1)
+  # data['q'] = np.zeros(int(steps/8)+1)
+
+  # for the appending version
+  data['r'] = []
+  data['q'] = []
+
+  step = 0
+  num_steps = steps * D
+  dt = 1 / D
+
+  while step < num_steps:
+    if step < (D * 100):
+      if step % 8 == 0:
+        data['r'].append(np.around(copy.deepcopy(R), 5))
+        data['q'].append(np.around(copy.deepcopy(Q), 5))
+    elif step % (8 * D) == 0:
+      # print(step)
+      # data['r'][int(step/(8*D))] = np.around(copy.deepcopy(R),5)
+      # data['q'][int(step/(8*D))] = np.around(copy.deepcopy(Q),5)
+
+      # for appending version
+      data['r'].append(np.around(copy.deepcopy(R), 5))
+      data['q'].append(np.around(copy.deepcopy(Q), 5))
+
+    normalised_overlap = np.divide(np.copy(R), np.sqrt(np.copy(Q)))
+    p_correct = (1 - 1 / np.pi * np.arccos(normalised_overlap))
+
+    # compute r,q updates
+    dR = 1/np.sqrt(2*np.pi) * (1 + normalised_overlap) * (lr_1 * p_correct**(T-1) + lr_2) + lr_2 * (T-1) * np.sqrt(2/np.pi) * normalised_overlap * p_correct
+
+
+    dQ = np.sqrt(2 * Q/np.pi) * (1 + normalised_overlap) * (lr_1 * p_correct**(T-1) + lr_2) + 2 * lr_2 * (T-1) * np.sqrt(2*Q/np.pi) * p_correct + lr_1 * (lr_1/T + 2*lr_2) * p_correct**T + lr_2**2 * (1 + (T-1)*p_correct) * p_correct
+
+    #print(data['r'][0])
+    #print(data['q'][0])
+    # update r, q
+    R += dt * dR
+    Q += dt * dQ
+    #print(data['r'][0])
+    #print(data['q'][0])
+
+    step += 1
+
+  """normalised_overlap = np.divide(np.copy(R),np.sqrt(np.copy(Q)))
+        theta = np.arccos(normalised_overlap)
+        P = (1- theta/np.pi)"""
+
+  # data['r'][int(steps/8)] = np.around(copy.deepcopy(R), 5)
+  # data['q'][int(steps/8)] = np.around(copy.deepcopy(Q), 5)
+
+  # for appending version
+  data['r'].append(np.around(copy.deepcopy(R), 5))
+  data['q'].append(np.around(copy.deepcopy(Q), 5))
+  print(data['r'][0])
+  print(data['q'][0])
+
+  data['r'] = np.asarray(data['r'])
+  data['q'] = np.asarray(data['q'])
+
+  file_path = os.path.join(path, 'dic.npy')
+  np.save(file_path, data)

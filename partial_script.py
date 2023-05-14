@@ -23,7 +23,7 @@ run_timestamp = datetime.datetime.now().strftime('%Y%m-%d%H-%M%S')
 results_path = os.path.join("utils", "truefinal")
 os.makedirs(results_path, exist_ok = True)
 
-experiment_path = os.path.join(results_path, "all_case")
+experiment_path = os.path.join(results_path, "partial")
 os.makedirs(experiment_path, exist_ok = True)
 
 run_path = os.path.join(experiment_path, run_timestamp)
@@ -35,28 +35,30 @@ os.mkdir(run_path)
 w_teacher = gen_teacher(900)
 vectors = generate_students(w_teacher, 900, 30, 1)
 student = vectors[47]
-T_s = [5,9,12]
-#T = 12
-#n_s = [7,9,11]
+#T_s = [5,9,12]
+T = 11
+lr_2s = [0.2]
+n_s = [2,5,9]
 
 #s
-executor_1 = submitit.AutoExecutor(folder="utils/truefinal/all_case")
+executor_1 = submitit.AutoExecutor(folder="utils/truefinal/partial")
 
 executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 4, slurm_partition = "gpu")
 
 jobs = []
 with executor_1.batch():
-	for T in T_s:
-		job = executor_1.submit(all_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
-		jobs.append(job)
+    for lr_2 in lr_2s:
+        for n in n_s:
+            job = executor_1.submit(partial_exp, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2 , steps = 8000, experiment_path = run_path)
+            jobs.append(job)
 
-executor_2 = submitit.AutoExecutor(folder="utils/truefinal/all_case")
+executor_2 = submitit.AutoExecutor(folder="utils/truefinal/partial")
 
 executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 1, slurm_array_parallelism = 128)
 
 jobs_2 = []
 with executor_2.batch():
-	for T in T_s:
-		job_2 = executor_2.submit(all_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
-		jobs_2.append(job_2)
-
+    for lr_2 in lr_2s:
+        for n in n_s:
+            job_2 = executor_2.submit(partial_ode, D = 900, teacher = w_teacher, student = student[1], T = T, n = n, lr_1 = 1, lr_2 = lr_2, steps = 8000, experiment_path = run_path)
+            jobs_2.append(job_2)
