@@ -49,7 +49,7 @@ jobs = []
 with executor_1.batch():
 	for T in T_s:
 		for lr_2 in lr_2s:
-			job = executor_1.submit(all_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 8000, experiment_path = run_path)
+			job = executor_1.submit(all_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = lr_2 , steps = 8000, experiment_path = run_path)
 			jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/truefinal/all_case_neg")
@@ -60,6 +60,6 @@ jobs_2 = []
 with executor_2.batch():
 	for T in T_s:
 		for lr_2 in lr_2s:
-			job_2 = executor_2.submit(all_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 8000, experiment_path = run_path)
+			job_2 = executor_2.submit(all_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = lr_2, steps = 8000, experiment_path = run_path)
 			jobs_2.append(job_2)
 
