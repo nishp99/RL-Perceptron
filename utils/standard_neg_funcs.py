@@ -316,6 +316,7 @@ def all_neg(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
   #save to path
 
 def partial_ode(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
+  print('started function')
   path = os.path.join(experiment_path, f'{T}_{n}_{lr_2}')
   os.mkdir(path)
 
@@ -387,6 +388,7 @@ def partial_ode(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
 
   file_path = os.path.join(path, 'dic.npy')
   np.save(file_path, data)
+  print('done')
 
 def bread_ode(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
   path = os.path.join(experiment_path, f'{T}_{lr_2}')

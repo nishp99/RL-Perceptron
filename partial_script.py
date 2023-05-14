@@ -54,7 +54,7 @@ with executor_1.batch():
 
 executor_2 = submitit.AutoExecutor(folder="utils/truefinal/partial")
 
-executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 1, slurm_array_parallelism = 128)
+executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, cpus_per_task = 4, slurm_array_parallelism = 128)
 
 jobs_2 = []
 with executor_2.batch():
