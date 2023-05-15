@@ -446,7 +446,7 @@ def partial_exp(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
     np.save(file_path, data)
 
 
-def bread_exp(D, teacher, rad, student, T, lr_1, lr_2, steps, experiment_path):
+def bread_exp(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
     cp.cuda.Device(0).use()
     teacher = cp.asarray(teacher)
     student = cp.asarray(student)
