@@ -58,6 +58,6 @@ executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, 
 jobs_2 = []
 with executor_2.batch():
     for lr_2 in lr_2s:
-        job_2 = executor_2.submit(n_or_more_neg, D = 900, teacher = w_teacher, student = student[1], T = T, lr_1 = 1, lr_2 = lr_2, steps = 16000, experiment_path = run_path)
+        job_2 = executor_2.submit(bread_ode, D = 900, teacher = w_teacher, student = student[1], T = T, lr_1 = 1, lr_2 = lr_2, steps = 16000, experiment_path = run_path)
         jobs_2.append(job_2)
 
