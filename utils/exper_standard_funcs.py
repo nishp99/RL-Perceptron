@@ -579,3 +579,144 @@ def bread_exp(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
 
     file_path = os.path.join(path, 'dic.npy')
     np.save(file_path, data)
+
+
+def bread_discount_exp(D, teacher, student, T, lr_1, lr_2, steps, experiment_path):
+    cp.cuda.Device(0).use()
+    teacher = cp.asarray(teacher)
+    student = cp.asarray(student)
+
+    teachers = cp.tile(cp.expand_dims(teacher, axis=0), (20, 1))
+    cp.cuda.Stream.null.synchronize()
+
+    path = os.path.join(experiment_path, f'breadexp_{T}_{lr_2}')
+    os.mkdir(path)
+
+    # create grid of learning_rates
+    """x_1, y_1 = cp.meshgrid(lr_2_s, lr_1_s)
+          cp.cuda.Stream.null.synchronize()
+          L_s = cp.concatenate((cp.expand_dims(y_1,axis = 2), cp.expand_dims(x_1,axis = 2)), axis = 2)
+          cp.cuda.Stream.null.synchronize()
+
+          size_1 = lr_1_s.size
+          size_2 = lr_2_s.size"""
+
+    # initialize all students
+    W = cp.tile(cp.expand_dims(student, axis=0), (20, 1))
+    cp.cuda.Stream.null.synchronize()
+
+    # create dictionary of order parameters
+    data = dict()
+    """data['r_mean'] = cp.zeros(int(steps/8))
+      cp.cuda.Stream.null.synchronize()
+      data['r_std'] = cp.zeros(int(steps/8))
+      cp.cuda.Stream.null.synchronize()
+      data['q_mean'] = cp.zeros(int(steps/8))
+      cp.cuda.Stream.null.synchronize()
+      data['q_std'] = cp.zeros(int(steps/8))"""
+    # added changes!!! to save all values of R/Q for all runs (20/2 times more data)
+    # data['R'] = cp.zeros((int(steps / 16)+1, 20))
+    # data['Q'] = cp.zeros((int(steps / 16)+1, 20))
+
+    # this is for the appending version
+    data['R'] = cp.zeros((1, 20))
+    data['Q'] = cp.zeros((1, 20))
+    cp.cuda.Stream.null.synchronize()
+
+    step = 0
+    num_steps = steps * D
+    dt = 1 / D
+
+    def create_upper_matrix(size, value=1):
+        upper = cp.zeros((size, size))
+        upper[cp.triu_indices(size, 0)] = value
+        return (upper)
+
+    discount_matrix = create_upper_matrix(T)
+    cp.cuda.Stream.null.synchronize()
+
+    while step < num_steps:
+        if step < (D * 100):
+            if step % 8 == 0:
+                R = cp.sum(teachers * cp.copy(W), axis=1) / D
+                Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+                data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+                data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
+        elif step % (8 * D) == 0:
+            print(step)
+            R = cp.sum(teachers * cp.copy(W), axis=1) / D
+            Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+
+            """data['r_mean'][int(step/(8*D))] = cp.around(cp.mean(R),5)
+            data['r_std'][int(step/(8*D))] = cp.around(cp.std(R),5)
+            data['q_mean'][int(step/(8*D))] = cp.around(cp.mean(Q),5)
+            data['q_std'][int(step/(8*D))] = cp.around(cp.std(Q),5)"""
+            # added bit!!!!
+            # data['R'][int(step/(16*D))] = cp.around(R,5)
+            # data['Q'][int(step/(16*D))] = cp.around(Q,5)
+
+            # for the appending version
+            data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+            data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
+
+        # sample T examples
+        """xs = rnd.randn(T, D)
+                    cp.cuda.Stream.null.synchronize()
+                    X = cp.tile(cp.expand_dims(cp.expand_dims(xs, axis = 1), axis = 1), (1,size_1, size_2, 1))
+                    cp.cuda.Stream.null.synchronize()"""
+
+        X = rnd.randn(T, 20, D)
+
+        # predicted classification
+        Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis=0) * X, axis=2))
+        cp.cuda.Stream.null.synchronize()
+
+        # actual classification
+        Y = cp.sign(cp.sum(cp.expand_dims(cp.copy(teachers), axis=0) * X, axis=2))
+        cp.cuda.Stream.null.synchronize()
+
+        r = (Y_pred*Y + 1)/2
+        cp.cuda.Stream.null.synchronize()
+        g = lr_2 * discount_matrix @ r
+        cp.cuda.Stream.null.synchronize()
+        discounted_reward = g + lr_1*cp.expand_dims(np.all(Y_pred == Y, axis=0), axis=0)
+        cp.cuda.Stream.null.synchronize()
+
+
+        # update from mean of examples over episode
+        hebbian_update = cp.mean(cp.expand_dims(Y_pred, axis = 2) * X * cp.expand_dims(discounted_reward, axis = 2), axis = 0)
+        cp.cuda.Stream.null.synchronize()
+
+        # update students
+        W += hebbian_update / cp.sqrt(D)
+
+        # log order parameters
+
+        step += 1
+
+    # log final accuracy
+    """R = cp.sum(cp.expand_dims(cp.expand_dims(cp.copy(teacher), axis = 0), axis = 0) * cp.copy(W), axis = 2)/D
+          Q = cp.sum(cp.copy(W)**2, axis = 2)/D
+          normalised_overlap = cp.divide(R,cp.sqrt(Q))
+          theta = cp.arccos(normalised_overlap)
+          P = (1- theta/np.pi)"""
+
+    R = cp.sum(teachers * cp.copy(W), axis=1) / D
+    Q = cp.sum(cp.copy(W) ** 2, axis=1) / D
+
+    # added bit!!!!
+    # data['R'][int(steps / 16),:] = cp.around(cp.copy(R), 5)
+    # data['Q'][int(steps / 16),:] = cp.around(cp.copy(Q), 5)
+    # for the appending version
+    data['R'] = cp.concatenate((data['R'], cp.expand_dims(cp.around(copy.deepcopy(R), 5), 0)), axis=0)
+    data['Q'] = cp.concatenate((data['Q'], cp.expand_dims(cp.around(copy.deepcopy(Q), 5), 0)), axis=0)
+
+    data['R'] = cp.asnumpy(data['R'])
+    data['Q'] = cp.asnumpy(data['Q'])
+
+    """data['p'] = cp.asnumpy(P)
+          data['lr'] = cp.asnumpy(L_s)
+          data['ang'] = rad"""
+
+    file_path = os.path.join(path, 'dic.npy')
+    np.save(file_path, data)
