@@ -389,31 +389,28 @@ def partial_exp(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
                     cp.cuda.Stream.null.synchronize()"""
 
         X = rnd.randn(T, 20, D)
-
-        # predicted classification
+        cp.cuda.Stream.null.synchronize()
         Y_pred = cp.sign(cp.sum(cp.expand_dims(cp.copy(W), axis=0) * X, axis=2))
         cp.cuda.Stream.null.synchronize()
-
-        # actual classification
+        # predicted classification
         Y = cp.sign(cp.sum(cp.expand_dims(cp.copy(teachers), axis=0) * X, axis=2))
         cp.cuda.Stream.null.synchronize()
-
-        # create filter for rewards (1/0)
         reward_1 = lr_1 * cp.all(Y_pred == Y, axis=0)
         cp.cuda.Stream.null.synchronize()
         reward_2 = lr_2 * cp.all(Y_pred[:n, :] == Y[:n, :], axis=0)
         cp.cuda.Stream.null.synchronize()
-        reward = reward_1 + reward_2
+        reward = cp.zeros_like(Y_pred)
         cp.cuda.Stream.null.synchronize()
-        reward = cp.expand_dims(reward, axis=1)
+        reward[:n, :] += reward_2
         cp.cuda.Stream.null.synchronize()
-
-        # update from mean of examples over episode
-        hebbian_update = cp.mean(cp.expand_dims(Y_pred, axis=2) * X, axis=0)
+        reward += reward_1
         cp.cuda.Stream.null.synchronize()
 
-        # update students
-        W += reward * hebbian_update / cp.sqrt(D)
+        hebbian_update = cp.mean(cp.expand_dims(Y_pred, axis=2) * X * cp.expand_dims(reward, axis=2), axis=0)
+        cp.cuda.Stream.null.synchronize()
+
+        W += hebbian_update / cp.sqrt(D)
+        cp.cuda.Stream.null.synchronize()
 
         # log order parameters
         step += 1

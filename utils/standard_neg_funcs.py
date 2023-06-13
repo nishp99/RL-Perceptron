@@ -356,13 +356,11 @@ def partial_ode(D, teacher, student, T, n, lr_1, lr_2, steps, experiment_path):
         p_correct = (1 - 1 / np.pi * np.arccos(normalised_overlap))
 
         # compute r,q updates
-        dR = ((1 / np.sqrt(2 * np.pi) * (1 + normalised_overlap) * (lr_1 * p_correct ** (T - n) + lr_2 * n / T) +
-               lr_2 * (T - n) / T * np.sqrt(2 / np.pi) * normalised_overlap * p_correct) * p_correct ** (n - 1))
+        dR = 1 /(T * np.sqrt(2 * np.pi)) * (1 + normalised_overlap) * p_correct ** (n - 1) * (T * lr_1 * p_correct ** (T - n) + lr_2 * n)
 
-        dQ = (p_correct ** (n - 1) * np.sqrt(2 * Q / np.pi) * (
-                (1 + normalised_overlap) * (lr_1 * p_correct ** (T - n) + lr_2 * n / T) +
-                2 * lr_2 * (T - n) / T * p_correct) + p_correct ** n / T * (
-                      (lr_1 ** 2 + 2 * lr_1 * lr_2) * p_correct ** (T - n) + lr_2 ** 2))
+        dQ = (p_correct ** (n - 1) / T * np.sqrt(2 * Q / np.pi) * (1 + normalised_overlap) * (
+                    lr_1 * T * p_correct ** (T - n) + lr_2 * n)
+              + p_correct ** n / T ** 2 * ((lr_1 * T + 2 * n * lr_2 * lr_1) * p_correct ** (T - n) + lr_2 ** 2 * n))
         # print(data['r'][0])
         # print(data['q'][0])
         # update r, q
