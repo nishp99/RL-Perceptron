@@ -32,22 +32,29 @@ os.mkdir(run_path)
 # from RL-Perceptron, utils, surface functions: generate teacher, and generate students
 
 
-w_teacher = gen_teacher(900)
-vectors = generate_students(w_teacher, 900, 30, 1)
-student = vectors[47]
-T_s = [1,2,3,4,5,6,7,8,9,10,11,12]
-#T = 12
+#w_teacher = gen_teacher(900)
+#vectors = generate_students(w_teacher, 900, 30, 1)
+#student = vectors[47]
+#T_s = [1,2,3,4,5,6,7,8,9,10,11,12]
+D_s = [100,200,300,400]
+teachers = dict()
+students = dict()
+for D in D_s:
+	teachers[D] = gen_teacher(D)
+	students[D] = gen_teacher(D)
+
+T = 10
 #n_s = [7,9,11]
 
 #s
 executor_1 = submitit.AutoExecutor(folder="utils/truefinal/all_case")
 
-executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 15, slurm_partition = "gpu")
+executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 4, slurm_partition = "gpu")
 
 jobs = []
 with executor_1.batch():
-	for T in T_s:
-		job = executor_1.submit(all_neg_exp, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0 , steps = 16000, experiment_path = run_path)
+	for D in D_s:
+		job = executor_1.submit(all_neg_exp, D = D, teacher = teachers[D], rad = 0, student = students[D], T = T, lr_1 = 1, lr_2 = 0 , steps = 16000, experiment_path = run_path)
 		jobs.append(job)
 
 executor_2 = submitit.AutoExecutor(folder="utils/truefinal/all_case")
@@ -56,7 +63,7 @@ executor_2.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 0, 
 
 jobs_2 = []
 with executor_2.batch():
-	for T in T_s:
-		job_2 = executor_2.submit(all_neg, D = 900, teacher = w_teacher, rad = student[0], student = student[1], T = T, lr_1 = 1, lr_2 = 0, steps = 16000, experiment_path = run_path)
+	for D in D_s:
+		job_2 = executor_2.submit(all_neg, D = D, teacher = teachers[D], rad = 0, student = students[D], T = T, lr_1 = 1, lr_2 = 0, steps = 16000, experiment_path = run_path)
 		jobs_2.append(job_2)
 
