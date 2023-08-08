@@ -35,14 +35,14 @@ os.mkdir(run_path)
 w_teacher = gen_teacher(900)
 vectors = generate_students(w_teacher, 900, 30, 1)
 student = vectors[47]
-T_s = [5,9,12]
+T_s = [1,2,3,4,5,6,7,8,9,10,11,12]
 #T = 12
 #n_s = [7,9,11]
 
 #s
 executor_1 = submitit.AutoExecutor(folder="utils/truefinal/all_case")
 
-executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 4, slurm_partition = "gpu")
+executor_1.update_parameters(timeout_min = 3000, mem_gb = 4, gpus_per_node = 1, cpus_per_task = 1, slurm_array_parallelism = 15, slurm_partition = "gpu")
 
 jobs = []
 with executor_1.batch():
